@@ -4,11 +4,13 @@ Remote control Windows machine powered by [UltraVNC](https://www.uvnc.com/) and 
 
 ## Run
 
-Click `run.bat` on your Windows machine. The password is "1234".
+1. Download <https://github.com/nwtgck/piping-vnc-server-for-windows/archive/refs/heads/master.zip>.
+2. Extract the zip.
+3. Click `run.bat` on your Windows machine. The password is "1234".
 
 The .bat runs VNC server on 5900 port and forwards the port via Piping Server.
 
-## Change
+## NOTE: Change paths
 
 Please change the paths `XteS20PrNMrjBRk5` and `KPoNbhFpkHAwRD6k` in `run.bat` for security.
 
