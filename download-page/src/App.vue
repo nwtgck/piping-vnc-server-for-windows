@@ -65,6 +65,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
 import {mdiCogOutline, mdiDownload, mdiLaptop, mdiOpenInNew} from "@mdi/js";
+import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
@@ -120,10 +121,6 @@ export default class App extends Vue {
   }
 
   async downloadBaseZip() {
-    const totalZipLength: number = await (async () => {
-      const res = await fetch(baseZipUrl, { method: "HEAD" });
-      return Number(res.headers.get("Content-Length"));
-    })();
     const zipRes = await fetch(baseZipUrl);
     if (zipRes.body === null) {
       throw new Error("body is null unexpectedly");
@@ -136,7 +133,7 @@ export default class App extends Vue {
       if (result.done) break;
       chunks.push(result.value);
       readLength += result.value.byteLength;
-      this.baseZipProgress = readLength / totalZipLength * 100;
+      this.baseZipProgress = readLength / BASE_ZIP_BYTE_LENGTH * 100;
     }
     return new Blob(chunks, {
       type: zipRes.headers.get("Content-Type") ?? undefined
