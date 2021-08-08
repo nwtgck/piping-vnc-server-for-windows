@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "download-zip": "curl -L https://github.com/nwtgck/piping-vnc-server-for-windows/archive/refs/heads/master.zip > ./public/piping-vnc-server-for-windows.zip",
+    "serve": "npm run download-zip && vue-cli-service serve",
+    "build": "npm run download-zip && vue-cli-service build"
   },
   "dependencies": {
     "core-js": "^3.6.5",
