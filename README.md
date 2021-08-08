@@ -20,15 +20,16 @@ In machine B, open <https://piping-vnc.nwtgck.org/vnc.html#?cs_path=please_chang
 
 OR
 
-In machine B, run `piping-tunnel client -p 5901 please_change_me` to forward 5900 port in machine A to 5901 port in machine B. You can use other VNC client to access localhost:5901 in machine B. To install `piping-tunnel` in machine B, visit <https://github.com/nwtgck/go-piping-tunnel>.
+In machine B, run `piping-tunnel client -p 5901 please_change_me/cs please_change_me/sc` to forward 5900 port in machine A to 5901 port in machine B. You can use other VNC client to access localhost:5901 in machine B. To install `piping-tunnel` in machine B, visit <https://github.com/nwtgck/go-piping-tunnel>.
 
 ## NOTE: Change path for security
 
-In `config.ini`, please change the path `please_change_me` to a complex string for security.
+In `config.ini`, please change the paths `please_change_me` to a complex string for security.
 
 ```ini
 ; Path used in piping-tunnel
-tunnel_path=please_change_me
+piping_cs_path=please_change_me/cs
+piping_sc_path=please_change_me/sc
 ```
 
 ## OSS Licenses
