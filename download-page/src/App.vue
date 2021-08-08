@@ -142,8 +142,6 @@ export default class App extends Vue {
 
   async download() {
     try {
-      this.baseZipProgress = 0;
-      this.zippingProgress = 0;
       this.downloadAndModifyInProgress = true;
       const zipBlob: Blob = await this.downloadBaseZip();
       const zip = await JSZip.loadAsync(zipBlob);
@@ -166,6 +164,9 @@ export default class App extends Vue {
       downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
     } finally {
       this.downloadAndModifyInProgress = false;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      this.baseZipProgress = 0;
+      this.zippingProgress = 0;
     }
   }
 
