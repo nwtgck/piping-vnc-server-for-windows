@@ -1,13 +1,23 @@
 <template>
-  <div id="app">
-    <input type="text" v-model="tunnelPath">
-    <button @click="download">Download</button>
-  </div>
+  <v-app>
+    <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        Piping VNC Server for Windows
+      </div>
+      <v-spacer></v-spacer>
+    </v-app-bar>
+
+    <v-main>
+      <v-container>
+        <v-text-field label="Tunnel path" v-model="tunnelPath" />
+        <v-btn @click="download">Download</v-btn>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
 import JSZip from "jszip";
 import * as path from "path";
 
@@ -40,9 +50,7 @@ function generateRandomString(length: number): string {
 }
 
 @Component({
-  components: {
-    HelloWorld,
-  },
+  components: {},
 })
 export default class App extends Vue {
   tunnelPathLength = 16;
@@ -78,14 +86,3 @@ piping_server_url=https://ppng.io
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
