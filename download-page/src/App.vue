@@ -11,7 +11,7 @@
       <v-container>
         <v-text-field label="Piping Server" v-model="pipingServerUrl" />
         <v-text-field label="Tunnel path" v-model="tunnelPath" />
-        <v-btn @click="download">Download</v-btn>
+        <v-btn @click="download" :loading="downloadInProgress">Download</v-btn>
       </v-container>
     </v-main>
   </v-app>
@@ -57,25 +57,31 @@ export default class App extends Vue {
   pipingServerUrl: string = "https://ppng.io";
   tunnelPathLength = 16;
   tunnelPath: string = generateRandomString(this.tunnelPathLength);
+  downloadInProgress = false;
 
   async download() {
-    const zipRes = await fetch("./piping-vnc-server-for-windows.zip");
-    const zip = await JSZip.loadAsync(await zipRes.blob());
-    const configIniPath = findConfigIniPath(zip);
-    console.debug("config.ini path:", configIniPath);
-    if (configIniPath !== undefined) {
-      zip.remove(configIniPath);
-      zip.file(configIniPath, this.configInitContent);
+    try {
+      this.downloadInProgress = true;
+      const zipRes = await fetch("./piping-vnc-server-for-windows.zip");
+      const zip = await JSZip.loadAsync(await zipRes.blob());
+      const configIniPath = findConfigIniPath(zip);
+      console.debug("config.ini path:", configIniPath);
+      if (configIniPath !== undefined) {
+        zip.remove(configIniPath);
+        zip.file(configIniPath, this.configInitContent);
+      }
+      const modifiedZipBlob = await zip.generateAsync({
+        type: "blob",
+        compression: "DEFLATE",
+        compressionOptions: {
+          level: 9,
+        },
+      });
+      console.log(modifiedZipBlob);
+      downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
+    } finally {
+      this.downloadInProgress = false;
     }
-    const modifiedZipBlob = await zip.generateAsync({
-      type: "blob",
-      compression: "DEFLATE",
-      compressionOptions: {
-        level: 9,
-      },
-    });
-    console.log(modifiedZipBlob);
-    downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
   }
 
   get configInitContent(): string {
