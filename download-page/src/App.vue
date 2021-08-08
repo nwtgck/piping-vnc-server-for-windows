@@ -10,17 +10,35 @@
     <v-main>
       <v-container>
         <p>
-          <v-btn @click="download" :loading="downloadInProgress">Download</v-btn>
+          <v-btn @click="download" x-large :loading="downloadInProgress">
+            <v-icon left dark>
+              {{ icons.mdiDownload }}
+            </v-icon>
+            Download zip
+          </v-btn>
         </p>
         <p>
-          <h3>URL for controller</h3>
-          <a :href="pipingVncUrl" target="_blank">{{ pipingVncUrl }}</a>
+          <h3>
+            <v-icon>{{ icons.mdiLaptop }}</v-icon>
+            URL for controller
+          </h3>
+          <a :href="pipingVncUrl" target="_blank">
+            {{ pipingVncUrl }}
+            <v-icon color="blue">
+              {{ icons.mdiOpenInNew }}
+            </v-icon>
+          </a>
         </p>
 
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
               Detail config
+              <template v-slot:actions>
+                <v-icon>
+                  {{ icons.mdiCogOutline }}
+                </v-icon>
+              </template>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
@@ -37,6 +55,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
+import {mdiDownload, mdiOpenInNew, mdiCogOutline, mdiLaptop} from "@mdi/js";
 
 // Find config.ini path
 function findConfigIniPath(zip: JSZip): string | undefined {
@@ -76,6 +95,12 @@ export default class App extends Vue {
   tunnelPathLength = 16;
   tunnelPath: string = generateRandomString(this.tunnelPathLength);
   downloadInProgress = false;
+  icons = {
+    mdiDownload,
+    mdiOpenInNew,
+    mdiCogOutline,
+    mdiLaptop,
+  };
 
   async download() {
     try {
