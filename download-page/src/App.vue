@@ -50,6 +50,8 @@ function generateRandomString(length: number): string {
   return Array.from(randomArr).map(n => chars[n % chars.length]).join('');
 }
 
+// TODO: GNU/GPL approve button
+// TODO: download progress in percentage
 @Component({
   components: {},
 })
