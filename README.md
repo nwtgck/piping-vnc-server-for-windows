@@ -24,12 +24,11 @@ In machine B, run `piping-tunnel client -p 5901 please_change_me` to forward 590
 
 ## NOTE: Change path for security
 
-Please change the path `please_change_me` to a complex string in `run.bat` for security.
+In `config.ini`, please change the path `please_change_me` to a complex string for security.
 
-```bat
-:: run.bat
-
-set tunnel_path=please_change_me
+```ini
+; Path used in piping-tunnel
+tunnel_path=please_change_me
 ```
 
 ## OSS Licenses
