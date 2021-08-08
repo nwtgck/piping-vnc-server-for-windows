@@ -9,9 +9,19 @@
 
     <v-main>
       <v-container>
-        <v-text-field label="Piping Server" v-model="pipingServerUrl" />
-        <v-text-field label="Tunnel path" v-model="tunnelPath" />
-        <v-btn @click="download" :loading="downloadInProgress">Download</v-btn>
+        <v-btn @click="download" :loading="downloadInProgress" style="margin-bottom: 2rem">Download</v-btn>
+
+        <v-expansion-panels :elevation="1">
+          <v-expansion-panel >
+            <v-expansion-panel-header>
+              Detail config
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-text-field label="Piping Server" v-model="pipingServerUrl" />
+              <v-text-field label="Tunnel path" v-model="tunnelPath" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-container>
     </v-main>
   </v-app>
