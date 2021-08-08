@@ -9,6 +9,7 @@
 
     <v-main>
       <v-container>
+        <v-text-field label="Piping Server" v-model="pipingServerUrl" />
         <v-text-field label="Tunnel path" v-model="tunnelPath" />
         <v-btn @click="download">Download</v-btn>
       </v-container>
@@ -53,6 +54,7 @@ function generateRandomString(length: number): string {
   components: {},
 })
 export default class App extends Vue {
+  pipingServerUrl: string = "https://ppng.io";
   tunnelPathLength = 16;
   tunnelPath: string = generateRandomString(this.tunnelPathLength);
 
@@ -81,7 +83,7 @@ export default class App extends Vue {
 ; Path used in piping-tunnel
 tunnel_path=${this.tunnelPath}
 ; Piping Server URL
-piping_server_url=https://ppng.io
+piping_server_url=${this.pipingServerUrl}
 `;
   }
 }
