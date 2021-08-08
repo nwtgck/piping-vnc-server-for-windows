@@ -9,7 +9,13 @@
 
     <v-main>
       <v-container>
-        <v-btn @click="download" :loading="downloadInProgress" style="margin-bottom: 2rem">Download</v-btn>
+        <p>
+          <v-btn @click="download" :loading="downloadInProgress">Download</v-btn>
+        </p>
+        <p>
+          <h3>URL for controller</h3>
+          <a :href="pipingVncUrl" target="_blank">{{ pipingVncUrl }}</a>
+        </p>
 
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
@@ -103,6 +109,10 @@ tunnel_path=${this.tunnelPath}
 ; Piping Server URL
 piping_server_url=${this.pipingServerUrl}
 `;
+  }
+
+  get pipingVncUrl(): string {
+    return `https://piping-vnc.nwtgck.org/vnc.html#?server=${encodeURIComponent(this.pipingServerUrl)}&cs_path=${this.tunnelPath}/cs&sc_path=${this.tunnelPath}/sc`;
   }
 }
 </script>
