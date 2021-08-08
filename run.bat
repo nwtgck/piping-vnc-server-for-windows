@@ -1,5 +1,8 @@
 setlocal
 
+:: Tunnel path used in piping-tunnel
+set tunnel_path=please_change_me
+
 :: Whether winvnc started or not
 set vnc_started=1==2
 
@@ -25,6 +28,6 @@ goto loop
 :vnc_running
 
 :: Start tunneling
-.\piping-tunnel\piping-tunnel server -p 5900 XteS20PrNMrjBRk5 KPoNbhFpkHAwRD6k
+.\piping-tunnel\piping-tunnel server -p 5900 %tunnel_path%
 
 pause
