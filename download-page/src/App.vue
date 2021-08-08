@@ -16,6 +16,9 @@
             </v-icon>
             Download zip
           </v-btn>
+          <div class="grey--text mb-2">
+            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license</a>.
+          </div>
         </p>
         <p>
           <h3>
@@ -85,7 +88,6 @@ function generateRandomString(length: number): string {
   return Array.from(randomArr).map(n => chars[n % chars.length]).join('');
 }
 
-// TODO: GNU/GPL approve button
 // TODO: download progress in percentage
 @Component({
   components: {},
