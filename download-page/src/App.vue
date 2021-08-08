@@ -5,6 +5,8 @@
         Piping VNC Server for Windows
       </div>
       <v-spacer></v-spacer>
+      <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" style="font-size: 1.4rem">
+      </a>
     </v-app-bar>
 
     <v-main>
@@ -17,7 +19,10 @@
             Download zip
           </v-btn>
           <div class="grey--text mb-2">
-            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license</a>.
+            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license </a>.
+            <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="grey--text mb-2">
+              <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />Source code
+            </a>
           </div>
         </p>
         <p>
