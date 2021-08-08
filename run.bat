@@ -28,6 +28,6 @@ goto loop
 :vnc_running
 
 :: Start tunneling
-.\piping-tunnel\piping-tunnel -s %piping_server_url% server -p 5900 %tunnel_path%
+.\piping-tunnel\piping-tunnel -s %piping_server_url% server -p 5900 %piping_cs_path% %piping_sc_path%
 
 pause

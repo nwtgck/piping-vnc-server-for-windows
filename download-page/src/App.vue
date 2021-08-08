@@ -51,7 +51,8 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
-              <v-text-field label="Tunnel path" v-model="tunnelPath" />
+              <v-text-field label="Tunnel client-to-server path" v-model="pipingCsPath" />
+              <v-text-field label="Tunnel server-to-client path" v-model="pipingScPath" />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -103,7 +104,8 @@ function generateRandomString(length: number): string {
 export default class App extends Vue {
   pipingServerUrl: string = "https://ppng.io";
   tunnelPathLength = 16;
-  tunnelPath: string = generateRandomString(this.tunnelPathLength);
+  pipingCsPath: string = generateRandomString(this.tunnelPathLength);
+  pipingScPath: string = generateRandomString(this.tunnelPathLength);
   downloadAndModifyInProgress = false;
   icons = {
     mdiDownload,
@@ -173,14 +175,15 @@ export default class App extends Vue {
   get configInitContent(): string {
     return `\
 ; Path used in piping-tunnel
-tunnel_path=${this.tunnelPath}
+piping_cs_path=${this.pipingCsPath}
+piping_sc_path=${this.pipingScPath}
 ; Piping Server URL
 piping_server_url=${this.pipingServerUrl}
 `;
   }
 
   get pipingVncUrl(): string {
-    return `https://piping-vnc.nwtgck.org/vnc.html#?server=${encodeURIComponent(this.pipingServerUrl)}&cs_path=${this.tunnelPath}/cs&sc_path=${this.tunnelPath}/sc`;
+    return `https://piping-vnc.nwtgck.org/vnc.html#?server=${encodeURIComponent(this.pipingServerUrl)}&cs_path=${this.pipingCsPath}&sc_path=${this.pipingScPath}`;
   }
 }
 </script>
