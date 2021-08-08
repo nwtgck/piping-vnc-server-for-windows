@@ -18,7 +18,7 @@
             </v-icon>
             Download zip
           </v-btn>
-          <v-progress-linear :value="baseZipProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
+          <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text mb-2">
             The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license </a>.
             <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="grey--text mb-2">
@@ -96,7 +96,6 @@ function generateRandomString(length: number): string {
   return Array.from(randomArr).map(n => chars[n % chars.length]).join('');
 }
 
-// TODO: download progress in percentage
 @Component({
   components: {},
 })
@@ -111,10 +110,16 @@ export default class App extends Vue {
     mdiCogOutline,
     mdiLaptop,
   };
+  // 0 ~ 100
   baseZipProgress: number = 0;
+  // 0 ~ 100
+  zippingProgress: number = 0;
+
+  get downloadAndModifyProgress() {
+    return this.baseZipProgress * 0.5 + this.zippingProgress * 0.5;
+  }
 
   async downloadBaseZip() {
-    this.baseZipProgress = 0;
     const zipRes = await fetch(baseZipUrl);
     if (zipRes.body === null) {
       throw new Error("body is null unexpectedly");
@@ -137,6 +142,8 @@ export default class App extends Vue {
 
   async download() {
     try {
+      this.baseZipProgress = 0;
+      this.zippingProgress = 0;
       this.downloadAndModifyInProgress = true;
       const zipBlob: Blob = await this.downloadBaseZip();
       const zip = await JSZip.loadAsync(zipBlob);
@@ -152,6 +159,8 @@ export default class App extends Vue {
         compressionOptions: {
           level: 9,
         },
+      }, (metadata) => {
+        this.zippingProgress = metadata.percent;
       });
       console.log(modifiedZipBlob);
       downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
