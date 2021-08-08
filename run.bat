@@ -10,7 +10,7 @@ set vnc_started=1==2
 :loop
 
 set vnc_status=NOT_RUNNING
-for /f "usebackq" %%a in (`netstat -ano ^| find "127.0.0.1:5900"`) do @set vnc_status=%%a
+for /f "usebackq" %%a in (`netstat -an ^| find "LISTENING" ^| find "127.0.0.1:5900"`) do @set vnc_status=%%a
 
 :: If VNC server is not running yet
 if %vnc_status% == NOT_RUNNING (
