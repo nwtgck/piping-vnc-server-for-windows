@@ -12,12 +12,13 @@
     <v-main>
       <v-container>
         <p>
-          <v-btn @click="download" x-large :loading="downloadInProgress">
+          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem">
             <v-icon left dark>
               {{ icons.mdiDownload }}
             </v-icon>
             Download zip
           </v-btn>
+          <v-progress-linear :value="baseZipProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text mb-2">
             The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license </a>.
             <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="grey--text mb-2">
@@ -65,6 +66,8 @@ import JSZip from "jszip";
 import * as path from "path";
 import {mdiDownload, mdiOpenInNew, mdiCogOutline, mdiLaptop} from "@mdi/js";
 
+const baseZipUrl = "./piping-vnc-server-for-windows.zip";
+
 // Find config.ini path
 function findConfigIniPath(zip: JSZip): string | undefined {
   for (const [zipPath, ] of Object.entries(zip.files)) {
@@ -101,19 +104,42 @@ export default class App extends Vue {
   pipingServerUrl: string = "https://ppng.io";
   tunnelPathLength = 16;
   tunnelPath: string = generateRandomString(this.tunnelPathLength);
-  downloadInProgress = false;
+  downloadAndModifyInProgress = false;
   icons = {
     mdiDownload,
     mdiOpenInNew,
     mdiCogOutline,
     mdiLaptop,
   };
+  baseZipProgress: number = 0;
+
+  async downloadBaseZip() {
+    this.baseZipProgress = 0;
+    const zipRes = await fetch(baseZipUrl);
+    if (zipRes.body === null) {
+      throw new Error("body is null unexpectedly");
+    }
+    const chunks: Uint8Array[] = [];
+    const zipLength = Number(zipRes.headers.get("Content-Length"));
+    const reader = zipRes.body.getReader();
+    let readLength = 0;
+    while (true) {
+      const result = await reader.read();
+      if (result.done) break;
+      chunks.push(result.value);
+      readLength += result.value.byteLength;
+      this.baseZipProgress = readLength / zipLength * 100;
+    }
+    return new Blob(chunks, {
+      type: zipRes.headers.get("Content-Type") ?? undefined
+    });
+  }
 
   async download() {
     try {
-      this.downloadInProgress = true;
-      const zipRes = await fetch("./piping-vnc-server-for-windows.zip");
-      const zip = await JSZip.loadAsync(await zipRes.blob());
+      this.downloadAndModifyInProgress = true;
+      const zipBlob: Blob = await this.downloadBaseZip();
+      const zip = await JSZip.loadAsync(zipBlob);
       const configIniPath = findConfigIniPath(zip);
       console.debug("config.ini path:", configIniPath);
       if (configIniPath !== undefined) {
@@ -130,7 +156,7 @@ export default class App extends Vue {
       console.log(modifiedZipBlob);
       downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
     } finally {
-      this.downloadInProgress = false;
+      this.downloadAndModifyInProgress = false;
     }
   }
 
