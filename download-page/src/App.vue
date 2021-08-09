@@ -2,11 +2,17 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        Piping VNC Server for Windows
+        <v-btn href="#" text class="text-none">
+          Piping VNC Server for Windows
+        </v-btn>
       </div>
       <v-spacer></v-spacer>
-      <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" style="font-size: 1.4rem">
-      </a>
+      <div class="d-flex align-center">
+        <v-btn href="https://github.com/nwtgck/piping-vnc-server-for-windows" text class="text-none" target="_blank">
+          <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />
+          Source code
+        </v-btn>
+      </div>
     </v-app-bar>
 
     <v-main>
@@ -62,11 +68,6 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
-        <p style="padding-top: 1rem">
-          <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="black--text mb-2">
-            <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />Source code
-          </a>
-        </p>
       </v-container>
     </v-main>
 
