@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "node get-base-zip-and-generate-ts.js && vue-cli-service build"
+    "serve": "node generate-base-zip-and-ts.js && vue-cli-service serve",
+    "build": "node generate-base-zip-and-ts.js && vue-cli-service build"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -22,7 +22,6 @@
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-typescript": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
-    "node-fetch": "^2.6.1",
     "sass": "~1.32.0",
     "sass-loader": "^10.0.0",
     "typescript": "~4.1.5",
