@@ -44,7 +44,7 @@
             URL for controller
           </h3>
           <a :href="pipingVncUrl" target="_blank">
-            {{ pipingVncUrl }}
+            Open Piping VNC to control remotely
             <v-icon color="blue">
               {{ icons.mdiOpenInNew }}
             </v-icon>
