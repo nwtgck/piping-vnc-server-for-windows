@@ -51,6 +51,27 @@
           </a>
         </p>
 
+        <div>
+          <v-checkbox v-model="encryptsOpensslAesCtr">
+            <template v-slot:label>
+              E2E encryption
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon right v-bind="attrs" v-on="on">{{ icons.mdiInformation }}</v-icon>
+                </template>
+                <pre>OpenSSL-compatible AES-CTR-256 with PBKDF2 iterations: 100000, PBKDF2 hash: SHA-256.</pre>
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+          <v-text-field v-if="encryptsOpensslAesCtr"
+                        label="E2EE passphrase"
+                        v-model="e2eePassphrase"
+                        :type="showsE2eePassphrase ? 'text' : 'password'"
+                        :append-icon="showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff"
+                        @click:append="showsE2eePassphrase = !showsE2eePassphrase"
+          />
+        </div>
+
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
@@ -65,19 +86,8 @@
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
               <v-text-field label="Tunnel client-to-server path" v-model="pipingCsPath" />
               <v-text-field label="Tunnel server-to-client path" v-model="pipingScPath" />
-              <v-checkbox v-model="encryptsOpensslAesCtr" label="E2E encryption with OpenSSL AES-CTR" />
-              <v-text-field v-if="encryptsOpensslAesCtr"
-                            label="OpenSSL AES-CTR passphrase"
-                            v-model="opensslAesCtrPassphrase"
-                            :type="showsOpensslAesCtrPassphrase ? 'text' : 'password'"
-                            :append-icon="showsOpensslAesCtrPassphrase ? icons.mdiEye : icons.mdiEyeOff"
-                            @click:append="showsOpensslAesCtrPassphrase = !showsOpensslAesCtrPassphrase"
-              />
-              <div v-if="encryptsOpensslAesCtr" class="grey--text mb-1">
-                OpenSSL-compatible AES-CTR-256 with PBKDF2 iterations: 100000, PBKDF2 hash: SHA-256.
-              </div>
               <h3>config.ini</h3>
-              <pre>{{ !encryptsOpensslAesCtr || showsOpensslAesCtrPassphrase ? configInitContent : "**********" }}</pre>
+              <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ? configInitContent : "**********" }}</pre>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -97,7 +107,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
@@ -157,8 +167,8 @@ export default class App extends Vue {
   pipingCsPath: string = parseHashAsQuery().get("cs_path") ?? generateRandomString(this.tunnelPathLength);
   pipingScPath: string = parseHashAsQuery().get("sc_path") ?? generateRandomString(this.tunnelPathLength);
   encryptsOpensslAesCtr: boolean = false;
-  opensslAesCtrPassphrase: string = generateRandomString(64);
-  showsOpensslAesCtrPassphrase: boolean = false;
+  e2eePassphrase: string = generateRandomString(64);
+  showsE2eePassphrase: boolean = false;
   downloadAndModifyInProgress = false;
   icons = {
     mdiDownload,
@@ -168,6 +178,7 @@ export default class App extends Vue {
     mdiContentCopy,
     mdiEye,
     mdiEyeOff,
+    mdiInformation,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;
@@ -185,7 +196,7 @@ export default class App extends Vue {
         return;
       }
       this.encryptsOpensslAesCtr = true;
-      this.opensslAesCtrPassphrase = e2eeParamEither.right.pass;
+      this.e2eePassphrase = e2eeParamEither.right.pass;
     }
   }
 
@@ -257,7 +268,7 @@ export default class App extends Vue {
     const url = new URL(location.href);
     const e2ee: t.TypeOf<typeof e2eeParamType> = {
       cipher_type: "openssl-aes-256-ctr",
-      pass: this.opensslAesCtrPassphrase,
+      pass: this.e2eePassphrase,
       pbkdf2: { iter: 100000, hash: "sha256" },
     };
     const params = new URLSearchParams({
@@ -286,7 +297,7 @@ piping_sc_path=${this.pipingScPath}
 piping_server_url=${this.pipingServerUrl}
 ${ this.encryptsOpensslAesCtr ? `\
 ; Passphrase for end-to-end encryption
-e2ee_passphrase=${this.opensslAesCtrPassphrase}
+e2ee_passphrase=${this.e2eePassphrase}
 ` : ""}`;
   }
 
@@ -307,7 +318,7 @@ ${this.pipingVncUrl}
         // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
         "e2ee": JSON.stringify({
           cipher_type: "openssl-aes-256-ctr",
-          pass: this.opensslAesCtrPassphrase,
+          pass: this.e2eePassphrase,
           pbkdf2: { iter: 100000, hash: "sha256" },
         }),
       } : {}),
