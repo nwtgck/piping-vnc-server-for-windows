@@ -82,6 +82,11 @@ function findConfigIniPath(zip: JSZip): string | undefined {
   return undefined;
 }
 
+function parseHashAsQuery(): URLSearchParams {
+  const url = new URL(`a://a${location.hash.substring(1)}`);
+  return url.searchParams;
+}
+
 function downloadBlob(blob: Blob, name: string) {
   const aTag = document.createElement("a");
   aTag.href = URL.createObjectURL(blob);
@@ -102,10 +107,10 @@ function generateRandomString(length: number): string {
   components: {},
 })
 export default class App extends Vue {
-  pipingServerUrl: string = "https://ppng.io";
+  pipingServerUrl: string = parseHashAsQuery().get("server") ?? "https://ppng.io";
   tunnelPathLength = 16;
-  pipingCsPath: string = generateRandomString(this.tunnelPathLength);
-  pipingScPath: string = generateRandomString(this.tunnelPathLength);
+  pipingCsPath: string = parseHashAsQuery().get("cs_path") ?? generateRandomString(this.tunnelPathLength);
+  pipingScPath: string = parseHashAsQuery().get("sc_path") ?? generateRandomString(this.tunnelPathLength);
   downloadAndModifyInProgress = false;
   icons = {
     mdiDownload,
