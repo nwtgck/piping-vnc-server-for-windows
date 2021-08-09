@@ -12,7 +12,7 @@ In machine A, download <https://github.com/nwtgck/piping-vnc-server-for-windows/
 
 ### Step 2
 
-In machine A, click `run.bat` on your Windows machine to run VNC server.
+In machine A, click `start.bat` on your Windows machine to run VNC server.
 
 ### Step 3
 
@@ -34,6 +34,6 @@ piping_sc_path=please_change_me/sc
 
 ## OSS Licenses
 
-* UltraVnc_133_dev10: [GNU/GPL](https://github.com/ultravnc/UltraVNC/blob/main/LICENSE)
-* [piping-tunnel](https://github.com/nwtgck/go-piping-tunnel): [MIT](https://github.com/nwtgck/go-piping-tunnel/blob/develop/LICENSE)
+* tools/UltraVnc_133_dev10: [GNU/GPL](https://github.com/ultravnc/UltraVNC/blob/main/LICENSE)
+* [tools/piping-tunnel](https://github.com/nwtgck/go-piping-tunnel): [MIT](https://github.com/nwtgck/go-piping-tunnel/blob/develop/LICENSE)
 * The other files: MIT
