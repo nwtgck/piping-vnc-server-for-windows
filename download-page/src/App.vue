@@ -21,9 +21,6 @@
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text mb-2">
             The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license </a>.
-            <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="grey--text mb-2">
-              <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />Source code
-            </a>
           </div>
         </p>
         <p>
@@ -56,6 +53,11 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
+        <p style="padding-top: 1rem">
+          <a href="https://github.com/nwtgck/piping-vnc-server-for-windows" target="_blank" class="black--text mb-2">
+            <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />Source code
+          </a>
+        </p>
       </v-container>
     </v-main>
   </v-app>
