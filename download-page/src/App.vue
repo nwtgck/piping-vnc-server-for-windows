@@ -29,7 +29,7 @@
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text mb-2">
-            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license </a>.
+            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license</a>.
           </div>
         </p>
         <p>
