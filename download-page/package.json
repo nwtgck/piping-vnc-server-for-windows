@@ -10,6 +10,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/vue-fontawesome": "^2.0.2",
+    "clipboard-copy": "^4.0.1",
     "core-js": "^3.6.5",
     "jszip": "^3.7.1",
     "vue": "^2.6.11",

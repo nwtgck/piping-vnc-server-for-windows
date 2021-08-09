@@ -10,13 +10,22 @@
     </v-app-bar>
 
     <v-main>
-      <v-container>
+      <v-container style="padding-top: 2rem">
         <p>
-          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem">
+          <div :style="{margin: '1rem 0', color: isSomeFragmentQueryFilled ? 'orange' : 'grey' }">
+            {{ pipingCsPath }} {{ pipingScPath }}
+          </div>
+          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
             <v-icon left dark>
               {{ icons.mdiDownload }}
             </v-icon>
             Download zip
+          </v-btn>
+          <v-btn @click="copyDownloadLink" x-large style="margin-bottom: 0.5rem">
+            <v-icon left dark>
+              {{ icons.mdiContentCopy }}
+            </v-icon>
+            Copy download link
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text mb-2">
@@ -60,15 +69,23 @@
         </p>
       </v-container>
     </v-main>
+
+    <v-snackbar v-model="snackbar" :timeout="2000" top color="blue">
+      <v-icon left dark>
+        {{ icons.mdiContentCopy }}
+      </v-icon>
+      {{ snackbarText }}
+    </v-snackbar>
   </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiDownload, mdiLaptop, mdiOpenInNew} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiLaptop, mdiOpenInNew} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
+import clipboardCopy from "clipboard-copy";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
@@ -119,11 +136,14 @@ export default class App extends Vue {
     mdiOpenInNew,
     mdiCogOutline,
     mdiLaptop,
+    mdiContentCopy,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;
   // 0 ~ 100
   zippingProgress: number = 0;
+  snackbar = false;
+  snackbarText = "";
 
   get downloadAndModifyProgress() {
     return this.baseZipProgress * 0.5 + this.zippingProgress * 0.5;
@@ -181,6 +201,28 @@ export default class App extends Vue {
       this.baseZipProgress = 0;
       this.zippingProgress = 0;
     }
+  }
+
+  copyDownloadLink() {
+    clipboardCopy(this.downloadLink);
+    this.snackbar = true;
+    this.snackbarText = "Coped link";
+  }
+
+  get downloadLink(): string {
+    const url = new URL(location.href);
+    const params = new URLSearchParams({
+      "server": this.pipingServerUrl,
+      "cs_path": this.pipingCsPath,
+      "sc_path": this.pipingScPath,
+    });
+    url.hash = `?${params.toString()}`;
+    return url.href;
+  }
+
+  get isSomeFragmentQueryFilled(): boolean {
+    const parsed = parseHashAsQuery();
+    return parsed.get("cs_path") !== null || parsed.get("sc_path") !== null || parsed.get("server") !== null;
   }
 
   get configInitContent(): string {
