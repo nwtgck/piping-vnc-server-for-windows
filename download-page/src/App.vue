@@ -73,12 +73,12 @@ import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
 // Find config.ini path
-function findConfigIniPath(zip: JSZip): string | undefined {
+function findConfigIniPath(zip: JSZip): { rootDirPath: string, configInitPath: string } | undefined {
   for (const [zipPath, ] of Object.entries(zip.files)) {
     const isRootFile = !path.dirname(zipPath).includes("/");
     const fileName = path.basename(zipPath);
     if (isRootFile && fileName === "config.ini") {
-      return zipPath;
+      return { rootDirPath: path.dirname(zipPath), configInitPath: zipPath };
     }
   }
   return undefined;
@@ -154,11 +154,15 @@ export default class App extends Vue {
       this.downloadAndModifyInProgress = true;
       const zipBlob: Blob = await this.downloadBaseZip();
       const zip = await JSZip.loadAsync(zipBlob);
-      const configIniPath = findConfigIniPath(zip);
-      console.debug("config.ini path:", configIniPath);
-      if (configIniPath !== undefined) {
-        zip.remove(configIniPath);
-        zip.file(configIniPath, this.configInitContent);
+      const foundResult = findConfigIniPath(zip);
+      console.debug("config.ini path:", foundResult);
+      if (foundResult !== undefined) {
+        // remove config.ini
+        zip.remove(foundResult.configInitPath);
+        // add config.ini
+        zip.file(foundResult.configInitPath, this.configInitContent);
+        // add usage for controller
+        zip.file(path.join(foundResult.rootDirPath, "help_for_controller.txt"), this.helpForControllerContent);
       }
       const modifiedZipBlob = await zip.generateAsync({
         type: "blob",
@@ -186,6 +190,13 @@ piping_cs_path=${this.pipingCsPath}
 piping_sc_path=${this.pipingScPath}
 ; Piping Server URL
 piping_server_url=${this.pipingServerUrl}
+`;
+  }
+
+  get helpForControllerContent(): string {
+    return `\
+# On Web browser
+${this.pipingVncUrl}
 `;
   }
 
