@@ -27,7 +27,14 @@ goto loop
 
 :vnc_running
 
+if defined e2ee_passphrase (
+  :: NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
+  set e2ee_flags=--symmetric --cipher-type=openssl-aes-256-ctr --pbkdf2 {\"iter\":100000,\"hash\":\"sha256\"} --pass %e2ee_passphrase%
+) else (
+  set e2ee_flags=
+)
+
 :: Start tunneling
-.\tools\piping-tunnel\piping-tunnel -s %piping_server_url% server -p 5900 %piping_cs_path% %piping_sc_path%
+.\tools\piping-tunnel\piping-tunnel -s %piping_server_url% server -p 5900 %e2ee_flags% %piping_cs_path% %piping_sc_path%
 
 pause
