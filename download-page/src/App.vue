@@ -73,6 +73,9 @@
                             :append-icon="showsOpensslAesCtrPassphrase ? icons.mdiEye : icons.mdiEyeOff"
                             @click:append="showsOpensslAesCtrPassphrase = !showsOpensslAesCtrPassphrase"
               />
+              <div v-if="encryptsOpensslAesCtr" class="grey--text mb-1">
+                OpenSSL-compatible AES-CTR-256 with PBKDF2 iterations: 100000, PBKDF2 hash: SHA-256.
+              </div>
               <h3>config.ini</h3>
               <pre>{{ !encryptsOpensslAesCtr || showsOpensslAesCtrPassphrase ? configInitContent : "**********" }}</pre>
             </v-expansion-panel-content>
@@ -94,11 +97,23 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiLaptop, mdiOpenInNew, mdiEye, mdiEyeOff} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
+import * as t from "io-ts";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
+
+// NOTE: Should not use this for piping-vnc-web parameter.
+const e2eeParamType = t.type({
+  cipher_type: t.literal("openssl-aes-256-ctr"),
+  pass: t.string,
+  // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
+  pbkdf2: t.type({
+    iter: t.literal(100000),
+    hash: t.literal("sha256")
+  }),
+});
 
 // Find config.ini path
 function findConfigIniPath(zip: JSZip): { rootDirPath: string, configInitPath: string } | undefined {
@@ -160,6 +175,19 @@ export default class App extends Vue {
   zippingProgress: number = 0;
   snackbar = false;
   snackbarText = "";
+
+  mounted() {
+    const e2eeRaw = parseHashAsQuery().get("e2ee");
+    if (e2eeRaw !== null) {
+      const e2eeParamEither = e2eeParamType.decode(JSON.parse(e2eeRaw));
+      if (e2eeParamEither._tag === "Left") {
+        console.error("invalid e2ee param format", e2eeParamEither.left);
+        return;
+      }
+      this.encryptsOpensslAesCtr = true;
+      this.opensslAesCtrPassphrase = e2eeParamEither.right.pass;
+    }
+  }
 
   get downloadAndModifyProgress() {
     return this.baseZipProgress * 0.5 + this.zippingProgress * 0.5;
@@ -227,10 +255,18 @@ export default class App extends Vue {
 
   get downloadLink(): string {
     const url = new URL(location.href);
+    const e2ee: t.TypeOf<typeof e2eeParamType> = {
+      cipher_type: "openssl-aes-256-ctr",
+      pass: this.opensslAesCtrPassphrase,
+      pbkdf2: { iter: 100000, hash: "sha256" },
+    };
     const params = new URLSearchParams({
       "server": this.pipingServerUrl,
       "cs_path": this.pipingCsPath,
       "sc_path": this.pipingScPath,
+      ...( this.encryptsOpensslAesCtr ? {
+        "e2ee": JSON.stringify(e2ee),
+      } : {}),
     });
     url.hash = `?${params.toString()}`;
     return url.href;
@@ -272,7 +308,7 @@ ${this.pipingVncUrl}
         "e2ee": JSON.stringify({
           cipher_type: "openssl-aes-256-ctr",
           pass: this.opensslAesCtrPassphrase,
-          pbkdf2: { iter: 100000, hash: "sha256" }
+          pbkdf2: { iter: 100000, hash: "sha256" },
         }),
       } : {}),
     });
