@@ -36,7 +36,7 @@ const ja: typeof defaultStr = {
   e2e_encryption: "E2E 暗号化",
   e2ee_info: `\
 opensslコマンドと同様の暗号化方法でエンドツーエンド暗号化を行います。
-暗号タイプはAES-256-CTRで、鍵導出はPBKDF2（反復回数＝100000、ハッシュ＝SHA-256）を使用します。
+暗号タイプはAES-256-CTRで、鍵導出はPBKDF2（ストレッチング回数＝100000、ハッシュ＝SHA-256）を使用します。
 `,
   e2ee_passphrase: "E2EE パスフレーズ",
   detail_config: "詳細設定",
