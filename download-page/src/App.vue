@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <v-btn href="#" text class="text-none">
+        <v-btn @click="goTop" text class="text-none">
           Piping VNC Server for Windows
         </v-btn>
       </div>
@@ -333,6 +333,12 @@ ${this.pipingVncUrl}
     });
     url.hash = `?${params.toString()}`;
     return url.href;
+  }
+
+  goTop() {
+    location.hash = "#";
+    // Reload for regenerating paths
+    location.reload();
   }
 }
 </script>
