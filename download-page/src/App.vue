@@ -92,7 +92,7 @@
                   {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
                 </v-icon>
               </h3>
-              <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ? configInitContent : "**********" }}</pre>
+              <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ? configInitContent : configInitContent.replace(e2eePassphrase, "*".repeat(e2eePassphrase.length)) }}</pre>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
