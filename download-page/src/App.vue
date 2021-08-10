@@ -18,7 +18,7 @@
     <v-main>
       <v-container style="padding-top: 2rem">
         <p>
-          <div :style="{margin: '1rem 0', color: isSomeFragmentQueryFilled ? 'orange' : 'grey' }">
+          <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text'">
             {{ pipingCsPath }} {{ pipingScPath }}
           </div>
           <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
