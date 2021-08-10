@@ -27,7 +27,7 @@
     <v-main>
       <v-container style="padding-top: 2rem">
         <p>
-          <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text'">
+          <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text text--darken-2'">
             {{ pipingCsPath }} {{ pipingScPath }}
           </div>
           <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
@@ -43,7 +43,10 @@
             {{ strings.copy_download_link }}
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
-          <div class="grey--text mb-2" v-html="strings.gpl_notice_html" />
+          <div class="grey--text text--darken-2 mb-2">
+            <v-icon>{{ icons.mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
+          </div>
+          <div class="grey--text text--darken-2 mb-2" v-html="strings.gpl_notice_html" />
         </p>
         <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
@@ -119,7 +122,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
@@ -196,6 +199,7 @@ export default class App extends Vue {
     mdiEye,
     mdiEyeOff,
     mdiInformation,
+    mdiHeartOutline,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;

@@ -13,7 +13,8 @@ const en = {
   source_code: "Source code",
   download_zip: "Download Zip",
   copy_download_link: "Copy download link",
-  gpl_notice_html: `The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license</a>.`,
+  zip_in_local: "Configured zip will be safely generated in local.",
+  gpl_notice_html: `The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text text--darken-2">GNU/GPL license</a>.`,
   open_piping_vnc_to_control_remotely: "Open Piping VNC to control remotely",
   e2e_encryption: "E2E encryption",
   e2ee_info: `\
@@ -29,7 +30,8 @@ const ja: typeof defaultStr = {
   source_code: "ソースコード",
   download_zip: "ZIPをダウンロード",
   copy_download_link: "ダウンロードリンクをコピー",
-  gpl_notice_html: `ZIPファイルは <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL ライセンス</a>の UltraVNC を含んでいます。`,
+  zip_in_local: "設定されたZIPはローカルで生成されます。",
+  gpl_notice_html: `ZIPファイルは <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text text--darken-2">GNU/GPL ライセンス</a>の UltraVNC を含んでいます。`,
   open_piping_vnc_to_control_remotely: "Piping VNCを開いて制御する",
   e2e_encryption: "E2E 暗号化",
   e2ee_info: `\
