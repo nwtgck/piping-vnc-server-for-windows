@@ -51,7 +51,7 @@
         <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
             <v-icon>{{ icons.mdiLaptop }}</v-icon>
-            {{ strings.open_piping_vnc_to_control_remotely }}
+            {{ strings.control_on_web_browser }}
             <v-icon color="blue">
               {{ icons.mdiOpenInNew }}
             </v-icon>
