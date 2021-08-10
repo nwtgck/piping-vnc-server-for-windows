@@ -18,7 +18,7 @@
     <v-main>
       <v-container style="padding-top: 2rem">
         <p>
-          <div :style="{margin: '1rem 0', color: isSomeFragmentQueryFilled ? 'orange' : 'grey' }">
+          <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text'">
             {{ pipingCsPath }} {{ pipingScPath }}
           </div>
           <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
@@ -44,12 +44,33 @@
             URL for controller
           </h3>
           <a :href="pipingVncUrl" target="_blank">
-            {{ pipingVncUrl }}
+            Open Piping VNC to control remotely
             <v-icon color="blue">
               {{ icons.mdiOpenInNew }}
             </v-icon>
           </a>
         </p>
+
+        <div>
+          <v-checkbox v-model="encryptsOpensslAesCtr">
+            <template v-slot:label>
+              E2E encryption
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon right v-bind="attrs" v-on="on">{{ icons.mdiInformation }}</v-icon>
+                </template>
+                <pre>OpenSSL-compatible AES-CTR-256 with PBKDF2 iterations: 100000, PBKDF2 hash: SHA-256.</pre>
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+          <v-text-field v-if="encryptsOpensslAesCtr"
+                        label="E2EE passphrase"
+                        v-model="e2eePassphrase"
+                        :type="showsE2eePassphrase ? 'text' : 'password'"
+                        :append-icon="showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff"
+                        @click:append="showsE2eePassphrase = !showsE2eePassphrase"
+          />
+        </div>
 
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
@@ -65,6 +86,16 @@
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
               <v-text-field label="Tunnel client-to-server path" v-model="pipingCsPath" />
               <v-text-field label="Tunnel server-to-client path" v-model="pipingScPath" />
+              <h3>
+                config.ini
+                <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
+                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                </v-icon>
+              </h3>
+              <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ?
+                  configInitContent :
+                  configInitContent.replace(`e2ee_passphrase=${e2eePassphrase}`, `e2ee_passphrase=${"*".repeat(e2eePassphrase.length)}`)
+              }}</pre>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -84,11 +115,23 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiLaptop, mdiOpenInNew} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
+import * as t from "io-ts";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
+
+// NOTE: Should not use this for piping-vnc-web parameter.
+const e2eeParamType = t.type({
+  cipher_type: t.literal("openssl-aes-256-ctr"),
+  pass: t.string,
+  // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
+  pbkdf2: t.type({
+    iter: t.literal(100000),
+    hash: t.literal("sha256")
+  }),
+});
 
 // Find config.ini path
 function findConfigIniPath(zip: JSZip): { rootDirPath: string, configInitPath: string } | undefined {
@@ -131,6 +174,9 @@ export default class App extends Vue {
   tunnelPathLength = 16;
   pipingCsPath: string = parseHashAsQuery().get("cs_path") ?? generateRandomString(this.tunnelPathLength);
   pipingScPath: string = parseHashAsQuery().get("sc_path") ?? generateRandomString(this.tunnelPathLength);
+  encryptsOpensslAesCtr: boolean = false;
+  e2eePassphrase: string = generateRandomString(64);
+  showsE2eePassphrase: boolean = false;
   downloadAndModifyInProgress = false;
   icons = {
     mdiDownload,
@@ -138,6 +184,9 @@ export default class App extends Vue {
     mdiCogOutline,
     mdiLaptop,
     mdiContentCopy,
+    mdiEye,
+    mdiEyeOff,
+    mdiInformation,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;
@@ -145,6 +194,19 @@ export default class App extends Vue {
   zippingProgress: number = 0;
   snackbar = false;
   snackbarText = "";
+
+  mounted() {
+    const e2eeRaw = parseHashAsQuery().get("e2ee");
+    if (e2eeRaw !== null) {
+      const e2eeParamEither = e2eeParamType.decode(JSON.parse(e2eeRaw));
+      if (e2eeParamEither._tag === "Left") {
+        console.error("invalid e2ee param format", e2eeParamEither.left);
+        return;
+      }
+      this.encryptsOpensslAesCtr = true;
+      this.e2eePassphrase = e2eeParamEither.right.pass;
+    }
+  }
 
   get downloadAndModifyProgress() {
     return this.baseZipProgress * 0.5 + this.zippingProgress * 0.5;
@@ -212,10 +274,18 @@ export default class App extends Vue {
 
   get downloadLink(): string {
     const url = new URL(location.href);
+    const e2ee: t.TypeOf<typeof e2eeParamType> = {
+      cipher_type: "openssl-aes-256-ctr",
+      pass: this.e2eePassphrase,
+      pbkdf2: { iter: 100000, hash: "sha256" },
+    };
     const params = new URLSearchParams({
       "server": this.pipingServerUrl,
       "cs_path": this.pipingCsPath,
       "sc_path": this.pipingScPath,
+      ...( this.encryptsOpensslAesCtr ? {
+        "e2ee": JSON.stringify(e2ee),
+      } : {}),
     });
     url.hash = `?${params.toString()}`;
     return url.href;
@@ -233,7 +303,10 @@ piping_cs_path=${this.pipingCsPath}
 piping_sc_path=${this.pipingScPath}
 ; Piping Server URL
 piping_server_url=${this.pipingServerUrl}
-`;
+${ this.encryptsOpensslAesCtr ? `\
+; Passphrase for end-to-end encryption
+e2ee_passphrase=${this.e2eePassphrase}
+` : ""}`;
   }
 
   get helpForControllerContent(): string {
@@ -244,7 +317,22 @@ ${this.pipingVncUrl}
   }
 
   get pipingVncUrl(): string {
-    return `https://piping-vnc.nwtgck.org/vnc.html#?server=${encodeURIComponent(this.pipingServerUrl)}&cs_path=${this.pipingCsPath}&sc_path=${this.pipingScPath}`;
+    const url = new URL("https://piping-vnc.nwtgck.org/vnc.html");
+    const params = new URLSearchParams({
+      "server": this.pipingServerUrl,
+      "cs_path": this.pipingCsPath,
+      "sc_path": this.pipingScPath,
+      ...( this.encryptsOpensslAesCtr ? {
+        // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
+        "e2ee": JSON.stringify({
+          cipher_type: "openssl-aes-256-ctr",
+          pass: this.e2eePassphrase,
+          pbkdf2: { iter: 100000, hash: "sha256" },
+        }),
+      } : {}),
+    });
+    url.hash = `?${params.toString()}`;
+    return url.href;
   }
 }
 </script>
