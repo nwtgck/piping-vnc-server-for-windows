@@ -10,8 +10,17 @@
       <div class="d-flex align-center">
         <v-btn href="https://github.com/nwtgck/piping-vnc-server-for-windows" text class="text-none" target="_blank">
           <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />
-          Source code
+          {{ strings.source_code }}
         </v-btn>
+      </div>
+      <div class="d-flex align-center">
+        <v-select v-model="language"
+                  :items="availableLanguages"
+                  label="Language"
+                  item-text="str"
+                  item-value="lang"
+                  style="margin-top: 1.5rem"
+        />
       </div>
     </v-app-bar>
 
@@ -25,26 +34,21 @@
             <v-icon left dark>
               {{ icons.mdiDownload }}
             </v-icon>
-            Download zip
+            {{ strings.download_zip }}
           </v-btn>
           <v-btn @click="copyDownloadLink" x-large style="margin-bottom: 0.5rem">
             <v-icon left dark>
               {{ icons.mdiContentCopy }}
             </v-icon>
-            Copy download link
+            {{ strings.copy_download_link }}
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
-          <div class="grey--text mb-2">
-            The zip file contains UltraVNC under <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" class="grey--text">GNU/GPL license</a>.
-          </div>
+          <div class="grey--text mb-2" v-html="strings.gpl_notice_html" />
         </p>
-        <p>
-          <h3>
-            <v-icon>{{ icons.mdiLaptop }}</v-icon>
-            URL for controller
-          </h3>
+        <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
-            Open Piping VNC to control remotely
+            <v-icon>{{ icons.mdiLaptop }}</v-icon>
+            {{ strings.open_piping_vnc_to_control_remotely }}
             <v-icon color="blue">
               {{ icons.mdiOpenInNew }}
             </v-icon>
@@ -54,17 +58,17 @@
         <div>
           <v-checkbox v-model="encryptsOpensslAesCtr">
             <template v-slot:label>
-              E2E encryption
+              {{ strings.e2e_encryption }}
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon right v-bind="attrs" v-on="on">{{ icons.mdiInformation }}</v-icon>
                 </template>
-                <pre>OpenSSL-compatible AES-CTR-256 with PBKDF2 iterations: 100000, PBKDF2 hash: SHA-256.</pre>
+                <pre>{{ strings.e2ee_info }}</pre>
               </v-tooltip>
             </template>
           </v-checkbox>
           <v-text-field v-if="encryptsOpensslAesCtr"
-                        label="E2EE passphrase"
+                        :label="strings.e2ee_passphrase"
                         v-model="e2eePassphrase"
                         :type="showsE2eePassphrase ? 'text' : 'password'"
                         :append-icon="showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff"
@@ -75,7 +79,7 @@
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
-              Detail config
+              {{ strings.detail_config }}
               <template v-slot:actions>
                 <v-icon>
                   {{ icons.mdiCogOutline }}
@@ -119,6 +123,9 @@ import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
+import {globalStore} from "@/vue-global";
+import {strings} from "@/strings";
+import {keys} from "@/local-storage-keys";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
@@ -166,6 +173,8 @@ function generateRandomString(length: number): string {
   return Array.from(randomArr).map(n => chars[n % chars.length]).join('');
 }
 
+type Language = 'en' | 'ja';
+
 @Component({
   components: {},
 })
@@ -194,6 +203,19 @@ export default class App extends Vue {
   zippingProgress: number = 0;
   snackbar = false;
   snackbarText = "";
+  availableLanguages: readonly {lang: Language, str: string}[] = [
+    {lang: 'en', str: 'English'},
+    {lang: 'ja', str: '日本語'},
+  ];
+
+  set language(l: string){
+    globalStore.language = l;
+    // Store to Local Storage
+    window.localStorage.setItem(keys.language, l);
+  }
+  get language(): string {
+    return globalStore.language;
+  }
 
   mounted() {
     const e2eeRaw = parseHashAsQuery().get("e2ee");
@@ -206,6 +228,11 @@ export default class App extends Vue {
       this.encryptsOpensslAesCtr = true;
       this.e2eePassphrase = e2eeParamEither.right.pass;
     }
+  }
+
+  // for language support
+  private get strings() {
+    return strings(globalStore.language);
   }
 
   get downloadAndModifyProgress() {
