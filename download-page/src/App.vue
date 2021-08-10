@@ -86,7 +86,12 @@
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
               <v-text-field label="Tunnel client-to-server path" v-model="pipingCsPath" />
               <v-text-field label="Tunnel server-to-client path" v-model="pipingScPath" />
-              <h3>config.ini</h3>
+              <h3>
+                config.ini
+                <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
+                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                </v-icon>
+              </h3>
               <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ? configInitContent : "**********" }}</pre>
             </v-expansion-panel-content>
           </v-expansion-panel>
