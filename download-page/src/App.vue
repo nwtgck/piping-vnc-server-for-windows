@@ -131,13 +131,6 @@ import {strings} from "@/strings";
 import {keys} from "@/local-storage-keys";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
-// You can change it by "uvnc_settings.exe".
-// SECURITY:
-// Communication is encrypted using HTTPS via Piping Server.
-// You can end-to-end encrypt by E2EE option.
-// So VNC password is not so important for security.
-// By default setting, VNC server only accepts loopback (localhost).
-const vncPassword = "1234";
 
 // NOTE: Should not use this for piping-vnc-web parameter.
 const e2eeParamType = t.type({
@@ -360,7 +353,6 @@ ${this.pipingVncUrl}
       "server": this.pipingServerUrl,
       "cs_path": this.pipingCsPath,
       "sc_path": this.pipingScPath,
-      "password": vncPassword,
       ...( this.encryptsOpensslAesCtr ? {
         // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
         "e2ee": JSON.stringify({
