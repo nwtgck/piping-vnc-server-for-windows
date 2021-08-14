@@ -23,7 +23,7 @@ const zip = new JSZip();
         dirPaths.push(filePath);
       }
       if (!stat.isDirectory()) {
-        const replacedPath = filePath.replace(/^..\//, "piping-vnc-server-for-windows/");
+        const replacedPath = filePath.replace(/^..\//, "");
         console.log("zipping: ", replacedPath);
         zip.file(replacedPath, await fs.readFile(filePath));
       }
