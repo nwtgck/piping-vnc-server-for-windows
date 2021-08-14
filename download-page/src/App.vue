@@ -240,7 +240,7 @@ export default class App extends Vue {
   }
 
   get downloadAndModifyProgress() {
-    return this.baseZipProgress * 0.5 + this.zippingProgress * 0.5;
+    return this.baseZipProgress * 0.7 + this.zippingProgress * 0.3;
   }
 
   async downloadBaseZip() {
