@@ -13,7 +13,12 @@ const zip = new JSZip();
     for (const fileName of fileNames) {
       const filePath = path.join(dirPath, fileName);
       // Not include zip and not add to search scope
-      if (filePath === "../.DS_Store" || filePath === "../.git" || filePath === "../download-page" || filePath === "../.github") {
+      if (filePath === "../.DS_Store" ||
+          filePath === "../.git" ||
+          filePath === "../download-page" ||
+          filePath === "../.gitattributes" ||
+          filePath === "../.github"
+      ) {
         continue;
       }
       const stat = await fs.lstat(filePath);
