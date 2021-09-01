@@ -30,7 +30,7 @@
           <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text text--darken-2'">
             {{ pipingCsPath }} {{ pipingScPath }}
           </div>
-          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
+          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem; font-weight: bold;" color="blue lighten-2">
             <v-icon left dark>
               {{ icons.mdiDownload }}
             </v-icon>
@@ -47,15 +47,6 @@
             <v-icon>{{ icons.mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
           </div>
           <div class="grey--text text--darken-2 mb-2" v-html="strings.gpl_notice_html" />
-        </p>
-        <p style="margin-bottom: 2rem">
-          <a :href="pipingVncUrl" target="_blank">
-            <v-icon>{{ icons.mdiLaptop }}</v-icon>
-            {{ strings.control_on_web_browser }}
-            <v-icon color="blue">
-              {{ icons.mdiOpenInNew }}
-            </v-icon>
-          </a>
         </p>
 
         <div>
@@ -79,7 +70,7 @@
           />
         </div>
 
-        <v-expansion-panels :elevation="1">
+        <v-expansion-panels :elevation="1" style="margin-bottom: 3rem">
           <v-expansion-panel >
             <v-expansion-panel-header>
               {{ strings.detail_config }}
@@ -106,6 +97,48 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
+
+
+        <h3 class="grey--text text--darken-2">{{ strings.remote_control }}</h3>
+        <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.remote_control_description }}</div>
+
+        <p style="margin-bottom: 2rem">
+          <a :href="pipingVncUrl" target="_blank">
+            <v-icon>{{ icons.mdiLaptop }}</v-icon>
+            {{ strings.control_from_web_browser }}
+            <v-icon color="blue">
+              {{ icons.mdiOpenInNew }}
+            </v-icon>
+          </a>
+        </p>
+
+        <v-expansion-panels :elevation="1">
+          <v-expansion-panel >
+            <v-expansion-panel-header>
+              {{ strings.detail_command }}
+              <template v-slot:actions>
+                <v-icon>
+                  {{ icons.mdiCodeGreaterThan }}
+                </v-icon>
+              </template>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
+              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.detail_command_description(clientHostPort) }}</div>
+              <div v-if="encryptsOpensslAesCtr" class="grey--text text--darken-2" style="margin-bottom: 1rem; font-size: 0.85rem;">
+                {{ strings.commands_contain_password }}
+                <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
+                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                </v-icon>
+              </div>
+              <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
+              <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
+              <textarea-with-copy :label="'BSD nc'" :value="generateClientHostCommand('nc -l')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
+              <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
+              <textarea-with-copy :label="'socat'" :value="generateClientHostCommand('socat')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-container>
     </v-main>
 
@@ -122,13 +155,15 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline, mdiCodeGreaterThan} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
 import {globalStore} from "@/vue-global";
 import {strings} from "@/strings";
 import {keys} from "@/local-storage-keys";
+import TextareaWithCopy from "@/components/TextareaWithCopy.vue";
+import urlJoin from "url-join";
 
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
@@ -178,8 +213,14 @@ function generateRandomString(length: number): string {
 
 type Language = 'en' | 'ja';
 
+const pbkdf2Iter = 100000;
+// NOTE: This string is embed
+const pbkdf2Hash = "sha256";
+
 @Component({
-  components: {},
+  components: {
+    TextareaWithCopy,
+  },
 })
 export default class App extends Vue {
   pipingServerUrl: string = parseHashAsQuery().get("server") ?? "https://ppng.io";
@@ -200,6 +241,7 @@ export default class App extends Vue {
     mdiEyeOff,
     mdiInformation,
     mdiHeartOutline,
+    mdiCodeGreaterThan,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;
@@ -211,6 +253,7 @@ export default class App extends Vue {
     {lang: 'en', str: 'English'},
     {lang: 'ja', str: '日本語'},
   ];
+  clientHostPort: number = 5901;
 
   set language(l: string){
     globalStore.language = l;
@@ -358,12 +401,47 @@ ${this.pipingVncUrl}
         "e2ee": JSON.stringify({
           cipher_type: "openssl-aes-256-ctr",
           pass: this.e2eePassphrase,
-          pbkdf2: { iter: 100000, hash: "sha256" },
+          pbkdf2: { iter: pbkdf2Iter, hash: pbkdf2Hash },
         }),
       } : {}),
     });
     url.hash = `?${params.toString()}`;
     return url.href;
+  }
+
+  generateClientHostCommand(clientHostServe: 'nc -l' | 'nc -lp' | 'socat'): string {
+    const serveCommand = (() => {
+      switch (clientHostServe) {
+        case 'nc -l':
+        case 'nc -lp':
+          return `${clientHostServe} ${this.clientHostPort}`;
+        case 'socat':
+          return `socat TCP-LISTEN:${this.clientHostPort} -`;
+      }
+    })();
+    // TODO: hide password properly
+    const encryptIfNeed = (() => {
+      if (this.encryptsOpensslAesCtr) {
+        return [ `stdbuf -i0 -o0 openssl aes-256-ctr -pass "pass:${this.e2eePassphrase}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
+      } else {
+        return [];
+      }
+    })();
+    const decryptIfNeed = (() => {
+      if (this.encryptsOpensslAesCtr) {
+        return [ `stdbuf -i0 -o0 openssl aes-256-ctr -d -pass "pass:${this.e2eePassphrase}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
+      } else {
+        return [];
+      }
+    })();
+    const clientHostCommand = [
+      `curl -sSN ${urlJoin(this.pipingServerUrl, this.pipingScPath)}`,
+      ...decryptIfNeed,
+      serveCommand,
+      ...encryptIfNeed,
+      `curl -sSNT - ${urlJoin(this.pipingServerUrl, this.pipingCsPath)}`
+    ].join(' | ');
+    return clientHostCommand;
   }
 
   goTop() {
