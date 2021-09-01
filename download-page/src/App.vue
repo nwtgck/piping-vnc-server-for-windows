@@ -110,7 +110,7 @@
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
-              {{ "Command" }}
+              {{ strings.detail_command }}
               <template v-slot:actions>
                 <v-icon>
                   {{ icons.mdiCodeGreaterThan }}
@@ -119,6 +119,8 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
+              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ `vnc://localhost:${clientHostPort}` }}</div>
+              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.detail_command_description(clientHostPort) }}</div>
               <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')"/>
               <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
               <textarea-with-copy :label="'BSD nc'" :value="generateClientHostCommand('nc -l')"/>
