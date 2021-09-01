@@ -125,11 +125,17 @@
             <v-expansion-panel-content>
               <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
               <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.detail_command_description(clientHostPort) }}</div>
-              <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')"/>
+              <div v-if="encryptsOpensslAesCtr" class="grey--text text--darken-2" style="margin-bottom: 1rem; font-size: 0.85rem;">
+                {{ strings.commands_contain_password }}
+                <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
+                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                </v-icon>
+              </div>
+              <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
               <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
-              <textarea-with-copy :label="'BSD nc'" :value="generateClientHostCommand('nc -l')"/>
+              <textarea-with-copy :label="'BSD nc'" :value="generateClientHostCommand('nc -l')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
               <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
-              <textarea-with-copy :label="'socat'" :value="generateClientHostCommand('socat')"/>
+              <textarea-with-copy :label="'socat'" :value="generateClientHostCommand('socat')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>

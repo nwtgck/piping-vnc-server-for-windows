@@ -1,22 +1,30 @@
 <template>
-  <v-textarea
-    ref="v_textarea"
-    :value="value"
-    outlined
-    :label="label"
-    rows="2"
-  >
-    <template v-slot:append-outer>
-      <v-tooltip v-model="showsCopied" bottom>
-        <template v-slot:activator="{}">
-          <v-icon @click="clickCopyIcon">
-            {{ icons.mdiContentCopy }}
-          </v-icon>
-        </template>
-        <span>Copied</span>
-      </v-tooltip>
-    </template>
-  </v-textarea>
+  <div>
+    <v-textarea v-if="!masksValue" :value="value" outlined :label="label" rows="2">
+      <template v-slot:append-outer>
+        <v-tooltip v-model="showsCopied" bottom>
+          <template v-slot:activator="{}">
+            <v-icon @click="clickCopyIcon">
+              {{ icons.mdiContentCopy }}
+            </v-icon>
+          </template>
+          <span>Copied</span>
+        </v-tooltip>
+      </template>
+    </v-textarea>
+    <v-text-field v-if="masksValue" :value="value" type="password" outlined :label="label">
+      <template v-slot:append-outer>
+        <v-tooltip v-model="showsCopied" bottom>
+          <template v-slot:activator="{}">
+            <v-icon @click="clickCopyIcon">
+              {{ icons.mdiContentCopy }}
+            </v-icon>
+          </template>
+          <span>Copied</span>
+        </v-tooltip>
+      </template>
+    </v-text-field>
+  </div>
 </template>
 
 <script lang="ts">
@@ -28,6 +36,7 @@ import clipboardCopy from "clipboard-copy";
 export default class TextareaWithCopy extends Vue {
   @Prop() private value!: string;
   @Prop() private label!: string;
+  @Prop({default: false}) private masksValue!: boolean;
   icons = {
     mdiContentCopy,
   };
@@ -35,10 +44,6 @@ export default class TextareaWithCopy extends Vue {
 
   async clickCopyIcon() {
     await clipboardCopy(this.value);
-    // Select textarea
-    // TODO: better way
-    (this.$refs.v_textarea as any).$el.querySelector('textarea').select();
-
     this.showsCopied = true;
     await new Promise(resolve => setTimeout(resolve, 2000));
     this.showsCopied = false;

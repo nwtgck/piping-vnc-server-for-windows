@@ -29,6 +29,7 @@ The cipher type is AES-256-CTR and the key is derived by PBKDF2 with iterations 
   detail_command_description(clientHostPort: number){
     return `Run either of commands to serve forwarded VNC port on ${clientHostPort}. You can access vnc://localhost:${clientHostPort} using a VNC viewer.`;
   },
+  commands_contain_password: "The commands below contain E2EE password.",
 };
 const defaultStr = en;
 
@@ -52,4 +53,5 @@ opensslコマンドと同様の暗号化方法でエンドツーエンド暗号�
   detail_command_description(clientHostPort: number) {
     return `以下のいずれかのコマンドを実行して、転送されたVNCポートを${clientHostPort}でサーブします。任意のVNC viewerを使って vnc://localhost:${clientHostPort} にアクセス可能です。`;
   },
+  commands_contain_password: "以下のコマンドはE2EEパスワードを含んでいます。",
 };
