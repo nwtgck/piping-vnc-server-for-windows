@@ -30,7 +30,7 @@
           <div style="margin: 1rem 0" :class="isSomeFragmentQueryFilled ? 'blue--text' : 'grey--text text--darken-2'">
             {{ pipingCsPath }} {{ pipingScPath }}
           </div>
-          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem" color="blue lighten-2">
+          <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem; font-weight: bold;" color="blue lighten-2">
             <v-icon left dark>
               {{ icons.mdiDownload }}
             </v-icon>
@@ -47,15 +47,6 @@
             <v-icon>{{ icons.mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
           </div>
           <div class="grey--text text--darken-2 mb-2" v-html="strings.gpl_notice_html" />
-        </p>
-        <p style="margin-bottom: 2rem">
-          <a :href="pipingVncUrl" target="_blank">
-            <v-icon>{{ icons.mdiLaptop }}</v-icon>
-            {{ strings.control_on_web_browser }}
-            <v-icon color="blue">
-              {{ icons.mdiOpenInNew }}
-            </v-icon>
-          </a>
         </p>
 
         <div>
@@ -79,7 +70,7 @@
           />
         </div>
 
-        <v-expansion-panels :elevation="1" style="margin-bottom: 0.5rem">
+        <v-expansion-panels :elevation="1" style="margin-bottom: 3rem">
           <v-expansion-panel >
             <v-expansion-panel-header>
               {{ strings.detail_config }}
@@ -107,6 +98,20 @@
           </v-expansion-panel>
         </v-expansion-panels>
 
+
+        <h3 class="grey--text text--darken-2">{{ strings.remote_control }}</h3>
+        <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.remote_control_description }}</div>
+
+        <p style="margin-bottom: 2rem">
+          <a :href="pipingVncUrl" target="_blank">
+            <v-icon>{{ icons.mdiLaptop }}</v-icon>
+            {{ strings.control_from_web_browser }}
+            <v-icon color="blue">
+              {{ icons.mdiOpenInNew }}
+            </v-icon>
+          </a>
+        </p>
+
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
@@ -119,7 +124,6 @@
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
-              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ `vnc://localhost:${clientHostPort}` }}</div>
               <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.detail_command_description(clientHostPort) }}</div>
               <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')"/>
               <div style="font-size: 0.8rem; margin-bottom: 0.5rem">OR</div>
