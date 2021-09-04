@@ -416,7 +416,7 @@ ${this.pipingVncUrl}
         case 'nc -lp':
           return `${clientHostServe} ${this.clientHostPort}`;
         case 'socat':
-          return `socat TCP-LISTEN:${this.clientHostPort} -`;
+          return `socat TCP-LISTEN:${this.clientHostPort},reuseaddr -`;
       }
     })();
     // TODO: hide password properly
