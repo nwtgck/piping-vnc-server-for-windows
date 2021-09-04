@@ -73,12 +73,10 @@
         <v-expansion-panels :elevation="1" style="margin-bottom: 3rem">
           <v-expansion-panel >
             <v-expansion-panel-header>
-              {{ strings.detail_config }}
-              <template v-slot:actions>
-                <v-icon>
-                  {{ icons.mdiCogOutline }}
-                </v-icon>
-              </template>
+              <span>
+                <v-icon>{{ icons.mdiCogOutline }}</v-icon>
+                {{ strings.detail_config }}
+              </span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field label="Piping Server" v-model="pipingServerUrl" />
@@ -99,12 +97,15 @@
         </v-expansion-panels>
 
 
-        <h3 class="grey--text text--darken-2">{{ strings.remote_control }}</h3>
+        <h3 class="grey--text text--darken-2">
+          <v-icon>{{ icons.mdiLaptop }}</v-icon>
+          {{ strings.remote_control }}
+        </h3>
         <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.remote_control_description }}</div>
 
         <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
-            <v-icon>{{ icons.mdiLaptop }}</v-icon>
+            <v-icon>{{ icons.mdiWeb }}</v-icon>
             {{ strings.control_from_web_browser }}
             <v-icon color="blue">
               {{ icons.mdiOpenInNew }}
@@ -115,12 +116,10 @@
         <v-expansion-panels :elevation="1">
           <v-expansion-panel >
             <v-expansion-panel-header>
-              {{ strings.detail_command }}
-              <template v-slot:actions>
-                <v-icon>
-                  {{ icons.mdiCodeGreaterThan }}
-                </v-icon>
-              </template>
+              <span>
+                <v-icon>{{ icons.mdiCodeGreaterThan }}</v-icon>
+                {{ strings.detail_command }}
+              </span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
@@ -155,7 +154,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import JSZip from "jszip";
 import * as path from "path";
-import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline, mdiCodeGreaterThan} from "@mdi/js";
+import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline, mdiCodeGreaterThan, mdiWeb} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
@@ -242,6 +241,7 @@ export default class App extends Vue {
     mdiInformation,
     mdiHeartOutline,
     mdiCodeGreaterThan,
+    mdiWeb,
   };
   // 0 ~ 100
   baseZipProgress: number = 0;
