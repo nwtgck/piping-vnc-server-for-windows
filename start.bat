@@ -16,9 +16,9 @@ for /f "usebackq" %%a in (`netstat -an ^| find "LISTENING" ^| find "127.0.0.1:59
 if %vnc_status% == NOT_RUNNING (
   if not %vnc_started% (
     if %PROCESSOR_ARCHITECTURE%==x86 (
-      start .\tools\UltraVnc_133_dev10\x86\winvnc.exe
+      start .\tools\UltraVnc_1342\x86\winvnc.exe
     ) else if %PROCESSOR_ARCHITECTURE%==AMD64 (
-      start .\tools\UltraVnc_133_dev10\x64\winvnc.exe
+      start .\tools\UltraVnc_1342\x64\winvnc.exe
     ) else (
       echo "Error: Unexpected processor architecture"
     )

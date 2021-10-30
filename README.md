@@ -34,6 +34,6 @@ piping_sc_path=please_change_me/sc
 
 ## OSS Licenses
 
-* tools/UltraVnc_133_dev10: [GNU/GPL](https://github.com/ultravnc/UltraVNC/blob/main/LICENSE)
+* tools/UltraVnc_1342: [GNU/GPL](https://github.com/ultravnc/UltraVNC/blob/main/LICENSE)
 * [tools/piping-tunnel](https://github.com/nwtgck/go-piping-tunnel): [MIT](https://github.com/nwtgck/go-piping-tunnel/blob/develop/LICENSE)
 * The other files: MIT
