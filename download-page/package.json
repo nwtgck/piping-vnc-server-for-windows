@@ -27,7 +27,7 @@
     "@vue/cli-plugin-babel": "^4.5.15",
     "@vue/cli-plugin-typescript": "^4.5.15",
     "@vue/cli-service": "^4.5.15",
-    "sass": "^1.32.13",
+    "sass": "^1.54.0",
     "sass-loader": "^10.2.0",
     "typescript": "^4.6.4",
     "vue-cli-plugin-vuetify": "^2.4.3",
