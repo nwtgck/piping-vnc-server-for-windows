@@ -30,7 +30,7 @@
     "sass": "^1.54.0",
     "sass-loader": "^10.2.0",
     "typescript": "^4.6.4",
-    "vue-cli-plugin-vuetify": "^2.4.3",
+    "vue-cli-plugin-vuetify": "^2.5.1",
     "vue-template-compiler": "^2.6.14",
     "vuetify-loader": "^1.7.3"
   }
