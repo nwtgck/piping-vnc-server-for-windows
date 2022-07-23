@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from "vue";
+import { ref } from "vue";
 import {mdiContentCopy} from "@mdi/js";
 import clipboardCopy from "clipboard-copy";
 
