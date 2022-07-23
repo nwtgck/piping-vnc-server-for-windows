@@ -157,7 +157,7 @@ import * as path from "path";
 import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline, mdiCodeGreaterThan, mdiWeb} from "@mdi/js";
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
-import * as t from "io-ts";
+import { z } from "zod";
 import {globalStore} from "@/vue-global";
 import {stringsByLang} from "@/strings";
 import {keys} from "@/local-storage-keys";
@@ -167,13 +167,13 @@ import urlJoin from "url-join";
 const baseZipUrl = "./piping-vnc-server-for-windows.zip";
 
 // NOTE: Should not use this for piping-vnc-web parameter.
-const e2eeParamType = t.type({
-  cipher_type: t.literal("openssl-aes-256-ctr"),
-  pass: t.string,
+const e2eeParamSchema = z.object({
+  cipher_type: z.literal("openssl-aes-256-ctr"),
+  pass: z.string(),
   // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
-  pbkdf2: t.type({
-    iter: t.literal(100000),
-    hash: t.literal("sha256")
+  pbkdf2: z.object({
+    iter: z.literal(100000),
+    hash: z.literal("sha256"),
   }),
 });
 
@@ -248,13 +248,13 @@ const language = computed<string>({
 onMounted(() => {
   const e2eeRaw = parseHashAsQuery().get("e2ee");
   if (e2eeRaw !== null) {
-    const e2eeParamEither = e2eeParamType.decode(JSON.parse(e2eeRaw));
-    if (e2eeParamEither._tag === "Left") {
-      console.error("invalid e2ee param format", e2eeParamEither.left);
+    const e2eeParamParsed = e2eeParamSchema.safeParse(JSON.parse(e2eeRaw));
+    if (!e2eeParamParsed.success) {
+      console.error("invalid e2ee param format", e2eeParamParsed.error);
       return;
     }
     encryptsOpensslAesCtr.value = true;
-    e2eePassphrase.value = e2eeParamEither.right.pass;
+    e2eePassphrase.value = e2eeParamParsed.data.pass;
   }
 });
 
@@ -325,7 +325,7 @@ function copyDownloadLink() {
 
 const downloadLink = computed<string>(() => {
   const url = new URL(location.href);
-  const e2ee: t.TypeOf<typeof e2eeParamType> = {
+  const e2ee: z.infer<typeof e2eeParamSchema> = {
     cipher_type: "openssl-aes-256-ctr",
     pass: e2eePassphrase.value,
     pbkdf2: { iter: 100000, hash: "sha256" },

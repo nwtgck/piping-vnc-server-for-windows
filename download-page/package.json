@@ -12,14 +12,13 @@
     "@fortawesome/vue-fontawesome": "^2.0.8",
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.23.5",
-    "fp-ts": "^2.12.1",
-    "io-ts": "^2.2.16",
     "jszip": "^3.10.0",
     "url-join": "^5.0.0",
     "vue": "^2.7.8",
     "vue-class-component": "^7.2.6",
     "vue-property-decorator": "^9.1.2",
-    "vuetify": "^2.6.7"
+    "vuetify": "^2.6.7",
+    "zod": "^3.17.10"
   },
   "devDependencies": {
     "@mdi/js": "^7.0.96",
