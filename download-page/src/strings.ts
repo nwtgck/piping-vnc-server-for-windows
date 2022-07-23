@@ -1,5 +1,5 @@
 
-export function strings(language: string): typeof defaultStr {
+export function stringsByLang(language: string): typeof defaultStr {
   if(language.startsWith("en")) {
     return en;
   } else if(language.startsWith("ja")) {

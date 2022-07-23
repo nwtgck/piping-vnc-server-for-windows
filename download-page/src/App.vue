@@ -32,19 +32,19 @@
           </div>
           <v-btn @click="download" x-large :loading="downloadAndModifyInProgress" style="margin-bottom: 0.5rem; margin-right: 2rem; font-weight: bold;" color="blue lighten-2">
             <v-icon left dark>
-              {{ icons.mdiDownload }}
+              {{ mdiDownload }}
             </v-icon>
             {{ strings.download_zip }}
           </v-btn>
           <v-btn @click="copyDownloadLink" x-large style="margin-bottom: 0.5rem">
             <v-icon left dark>
-              {{ icons.mdiContentCopy }}
+              {{ mdiContentCopy }}
             </v-icon>
             {{ strings.copy_download_link }}
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text text--darken-2 mb-2">
-            <v-icon>{{ icons.mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
+            <v-icon>{{ mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
           </div>
           <div class="grey--text text--darken-2 mb-2" v-html="strings.gpl_notice_html" />
         </p>
@@ -55,7 +55,7 @@
               {{ strings.e2e_encryption }}
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
-                  <v-icon right v-bind="attrs" v-on="on">{{ icons.mdiInformation }}</v-icon>
+                  <v-icon right v-bind="attrs" v-on="on">{{ mdiInformation }}</v-icon>
                 </template>
                 <pre>{{ strings.e2ee_info }}</pre>
               </v-tooltip>
@@ -65,7 +65,7 @@
                         :label="strings.e2ee_passphrase"
                         v-model="e2eePassphrase"
                         :type="showsE2eePassphrase ? 'text' : 'password'"
-                        :append-icon="showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff"
+                        :append-icon="showsE2eePassphrase ? mdiEye : mdiEyeOff"
                         @click:append="showsE2eePassphrase = !showsE2eePassphrase"
           />
         </div>
@@ -74,7 +74,7 @@
           <v-expansion-panel >
             <v-expansion-panel-header>
               <span>
-                <v-icon>{{ icons.mdiCogOutline }}</v-icon>
+                <v-icon>{{ mdiCogOutline }}</v-icon>
                 {{ strings.detail_config }}
               </span>
             </v-expansion-panel-header>
@@ -85,7 +85,7 @@
               <h3>
                 config.ini
                 <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
-                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                  {{ showsE2eePassphrase ? mdiEye : mdiEyeOff }}
                 </v-icon>
               </h3>
               <pre>{{ !encryptsOpensslAesCtr || showsE2eePassphrase ?
@@ -98,17 +98,17 @@
 
 
         <h3 class="grey--text text--darken-2">
-          <v-icon>{{ icons.mdiLaptop }}</v-icon>
+          <v-icon>{{ mdiLaptop }}</v-icon>
           {{ strings.remote_control }}
         </h3>
         <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.remote_control_description }}</div>
 
         <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
-            <v-icon>{{ icons.mdiWeb }}</v-icon>
+            <v-icon>{{ mdiWeb }}</v-icon>
             {{ strings.control_from_web_browser }}
             <v-icon color="blue">
-              {{ icons.mdiOpenInNew }}
+              {{ mdiOpenInNew }}
             </v-icon>
           </a>
         </p>
@@ -117,7 +117,7 @@
           <v-expansion-panel >
             <v-expansion-panel-header>
               <span>
-                <v-icon>{{ icons.mdiCodeGreaterThan }}</v-icon>
+                <v-icon>{{ mdiCodeGreaterThan }}</v-icon>
                 {{ strings.detail_command }}
               </span>
             </v-expansion-panel-header>
@@ -127,7 +127,7 @@
               <div v-if="encryptsOpensslAesCtr" class="grey--text text--darken-2" style="margin-bottom: 1rem; font-size: 0.85rem;">
                 {{ strings.commands_contain_password }}
                 <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
-                  {{ showsE2eePassphrase ? icons.mdiEye : icons.mdiEyeOff }}
+                  {{ showsE2eePassphrase ? mdiEye : mdiEyeOff }}
                 </v-icon>
               </div>
               <textarea-with-copy :label="'GNU nc'" :value="generateClientHostCommand('nc -lp')" :masks-value="encryptsOpensslAesCtr && !showsE2eePassphrase"/>
@@ -143,15 +143,15 @@
 
     <v-snackbar v-model="snackbar" :timeout="2000" top color="blue">
       <v-icon left dark>
-        {{ icons.mdiContentCopy }}
+        {{ mdiContentCopy }}
       </v-icon>
       {{ snackbarText }}
     </v-snackbar>
   </v-app>
 </template>
 
-<script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+<script setup lang="ts">
+import {ref, computed, onMounted} from "vue";
 import JSZip from "jszip";
 import * as path from "path";
 import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop, mdiOpenInNew, mdiInformation, mdiHeartOutline, mdiCodeGreaterThan, mdiWeb} from "@mdi/js";
@@ -159,7 +159,7 @@ import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import * as t from "io-ts";
 import {globalStore} from "@/vue-global";
-import {strings} from "@/strings";
+import {stringsByLang} from "@/strings";
 import {keys} from "@/local-storage-keys";
 import TextareaWithCopy from "@/components/TextareaWithCopy.vue";
 import urlJoin from "url-join";
@@ -216,238 +216,214 @@ const pbkdf2Iter = 100000;
 // NOTE: This string is embed
 const pbkdf2Hash = "sha256";
 
-@Component({
-  components: {
-    TextareaWithCopy,
-  },
-})
-export default class App extends Vue {
-  pipingServerUrl: string = parseHashAsQuery().get("server") ?? "https://ppng.io";
-  tunnelPathLength = 16;
-  pipingCsPath: string = parseHashAsQuery().get("cs_path") ?? generateRandomString(this.tunnelPathLength);
-  pipingScPath: string = parseHashAsQuery().get("sc_path") ?? generateRandomString(this.tunnelPathLength);
-  encryptsOpensslAesCtr: boolean = false;
-  e2eePassphrase: string = generateRandomString(64);
-  showsE2eePassphrase: boolean = false;
-  downloadAndModifyInProgress = false;
-  icons = {
-    mdiDownload,
-    mdiOpenInNew,
-    mdiCogOutline,
-    mdiLaptop,
-    mdiContentCopy,
-    mdiEye,
-    mdiEyeOff,
-    mdiInformation,
-    mdiHeartOutline,
-    mdiCodeGreaterThan,
-    mdiWeb,
-  };
-  // 0 ~ 100
-  baseZipProgress: number = 0;
-  // 0 ~ 100
-  zippingProgress: number = 0;
-  snackbar = false;
-  snackbarText = "";
-  availableLanguages: readonly {lang: Language, str: string}[] = [
-    {lang: 'en', str: 'English'},
-    {lang: 'ja', str: '日本語'},
-  ];
-  clientHostPort: number = 5901;
+const pipingServerUrl = ref(parseHashAsQuery().get("server") ?? "https://ppng.io");
+const tunnelPathLength = ref(16);
+const pipingCsPath = ref(parseHashAsQuery().get("cs_path") ?? generateRandomString(tunnelPathLength.value));
+const pipingScPath = ref(parseHashAsQuery().get("sc_path") ?? generateRandomString(tunnelPathLength.value));
+const encryptsOpensslAesCtr = ref(false);
+const e2eePassphrase = ref(generateRandomString(64));
+const showsE2eePassphrase = ref(false);
+const downloadAndModifyInProgress = ref(false);
+// 0 ~ 100
+const baseZipProgress = ref(0);
+// 0 ~ 100
+const zippingProgress = ref(0);
+const snackbar = ref(false);
+const snackbarText = ref("");
+const availableLanguages = ref<readonly {lang: Language, str: string}[]>([
+  {lang: 'en', str: 'English'},
+  {lang: 'ja', str: '日本語'},
+]);
+const clientHostPort = ref(5901);
 
-  set language(l: string){
+const language = computed<string>({
+  get: () => globalStore.language,
+  set(l: string) {
     globalStore.language = l;
     // Store to Local Storage
     window.localStorage.setItem(keys.language, l);
   }
-  get language(): string {
-    return globalStore.language;
-  }
+});
 
-  mounted() {
-    const e2eeRaw = parseHashAsQuery().get("e2ee");
-    if (e2eeRaw !== null) {
-      const e2eeParamEither = e2eeParamType.decode(JSON.parse(e2eeRaw));
-      if (e2eeParamEither._tag === "Left") {
-        console.error("invalid e2ee param format", e2eeParamEither.left);
-        return;
-      }
-      this.encryptsOpensslAesCtr = true;
-      this.e2eePassphrase = e2eeParamEither.right.pass;
+onMounted(() => {
+  const e2eeRaw = parseHashAsQuery().get("e2ee");
+  if (e2eeRaw !== null) {
+    const e2eeParamEither = e2eeParamType.decode(JSON.parse(e2eeRaw));
+    if (e2eeParamEither._tag === "Left") {
+      console.error("invalid e2ee param format", e2eeParamEither.left);
+      return;
     }
+    encryptsOpensslAesCtr.value = true;
+    e2eePassphrase.value = e2eeParamEither.right.pass;
   }
+});
 
-  // for language support
-  private get strings() {
-    return strings(globalStore.language);
+// for language support
+const strings = computed(() => stringsByLang(globalStore.language));
+
+const downloadAndModifyProgress = computed<number>(() => baseZipProgress.value * 0.7 + zippingProgress.value * 0.3);
+
+async function downloadBaseZip() {
+  const zipRes = await fetch(baseZipUrl);
+  if (zipRes.body === null) {
+    throw new Error("body is null unexpectedly");
   }
-
-  get downloadAndModifyProgress() {
-    return this.baseZipProgress * 0.7 + this.zippingProgress * 0.3;
+  const chunks: Uint8Array[] = [];
+  const reader = zipRes.body.getReader();
+  let readLength = 0;
+  while (true) {
+    const result = await reader.read();
+    if (result.done) break;
+    chunks.push(result.value);
+    readLength += result.value.byteLength;
+    baseZipProgress.value = readLength / BASE_ZIP_BYTE_LENGTH * 100;
   }
+  return new Blob(chunks, {
+    type: zipRes.headers.get("Content-Type") ?? undefined
+  });
+}
 
-  async downloadBaseZip() {
-    const zipRes = await fetch(baseZipUrl);
-    if (zipRes.body === null) {
-      throw new Error("body is null unexpectedly");
+async function download() {
+  try {
+    downloadAndModifyInProgress.value = true;
+    const zipBlob: Blob = await downloadBaseZip();
+    const zip = await JSZip.loadAsync(zipBlob);
+    const foundResult = findConfigIniPath(zip);
+    console.debug("config.ini path:", foundResult);
+    if (foundResult !== undefined) {
+      // remove config.ini
+      zip.remove(foundResult.configInitPath);
+      // add config.ini
+      zip.file(foundResult.configInitPath, configInitContent.value);
+      // add usage for controller
+      zip.file(path.join(foundResult.rootDirPath, "help_for_controller.txt"), helpForControllerContent.value);
     }
-    const chunks: Uint8Array[] = [];
-    const reader = zipRes.body.getReader();
-    let readLength = 0;
-    while (true) {
-      const result = await reader.read();
-      if (result.done) break;
-      chunks.push(result.value);
-      readLength += result.value.byteLength;
-      this.baseZipProgress = readLength / BASE_ZIP_BYTE_LENGTH * 100;
-    }
-    return new Blob(chunks, {
-      type: zipRes.headers.get("Content-Type") ?? undefined
+    const modifiedZipBlob = await zip.generateAsync({
+      type: "blob",
+      compression: "DEFLATE",
+      compressionOptions: {
+        level: 9,
+      },
+    }, (metadata) => {
+      zippingProgress.value = metadata.percent;
     });
+    console.log(modifiedZipBlob);
+    downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
+  } finally {
+    downloadAndModifyInProgress.value = false;
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    baseZipProgress.value = 0;
+    zippingProgress.value = 0;
   }
+}
 
-  async download() {
-    try {
-      this.downloadAndModifyInProgress = true;
-      const zipBlob: Blob = await this.downloadBaseZip();
-      const zip = await JSZip.loadAsync(zipBlob);
-      const foundResult = findConfigIniPath(zip);
-      console.debug("config.ini path:", foundResult);
-      if (foundResult !== undefined) {
-        // remove config.ini
-        zip.remove(foundResult.configInitPath);
-        // add config.ini
-        zip.file(foundResult.configInitPath, this.configInitContent);
-        // add usage for controller
-        zip.file(path.join(foundResult.rootDirPath, "help_for_controller.txt"), this.helpForControllerContent);
-      }
-      const modifiedZipBlob = await zip.generateAsync({
-        type: "blob",
-        compression: "DEFLATE",
-        compressionOptions: {
-          level: 9,
-        },
-      }, (metadata) => {
-        this.zippingProgress = metadata.percent;
-      });
-      console.log(modifiedZipBlob);
-      downloadBlob(modifiedZipBlob, "piping-vnc-server-for-windows.zip");
-    } finally {
-      this.downloadAndModifyInProgress = false;
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      this.baseZipProgress = 0;
-      this.zippingProgress = 0;
-    }
-  }
+function copyDownloadLink() {
+  clipboardCopy(downloadLink.value);
+  snackbar.value = true;
+  snackbarText.value = "Coped link";
+}
 
-  copyDownloadLink() {
-    clipboardCopy(this.downloadLink);
-    this.snackbar = true;
-    this.snackbarText = "Coped link";
-  }
+const downloadLink = computed<string>(() => {
+  const url = new URL(location.href);
+  const e2ee: t.TypeOf<typeof e2eeParamType> = {
+    cipher_type: "openssl-aes-256-ctr",
+    pass: e2eePassphrase.value,
+    pbkdf2: { iter: 100000, hash: "sha256" },
+  };
+  const params = new URLSearchParams({
+    "server": pipingServerUrl.value,
+    "cs_path": pipingCsPath.value,
+    "sc_path": pipingScPath.value,
+    ...( encryptsOpensslAesCtr.value ? {
+      "e2ee": JSON.stringify(e2ee),
+    } : {}),
+  });
+  url.hash = `?${params.toString()}`;
+  return url.href;
+});
 
-  get downloadLink(): string {
-    const url = new URL(location.href);
-    const e2ee: t.TypeOf<typeof e2eeParamType> = {
-      cipher_type: "openssl-aes-256-ctr",
-      pass: this.e2eePassphrase,
-      pbkdf2: { iter: 100000, hash: "sha256" },
-    };
-    const params = new URLSearchParams({
-      "server": this.pipingServerUrl,
-      "cs_path": this.pipingCsPath,
-      "sc_path": this.pipingScPath,
-      ...( this.encryptsOpensslAesCtr ? {
-        "e2ee": JSON.stringify(e2ee),
-      } : {}),
-    });
-    url.hash = `?${params.toString()}`;
-    return url.href;
-  }
+const isSomeFragmentQueryFilled = computed<boolean>(() => {
+  const parsed = parseHashAsQuery();
+  return parsed.get("cs_path") !== null || parsed.get("sc_path") !== null || parsed.get("server") !== null;
+});
 
-  get isSomeFragmentQueryFilled(): boolean {
-    const parsed = parseHashAsQuery();
-    return parsed.get("cs_path") !== null || parsed.get("sc_path") !== null || parsed.get("server") !== null;
-  }
-
-  get configInitContent(): string {
-    return `\
+const configInitContent = computed<string>(() => {
+  return `\
 ; Path used in piping-tunnel
-piping_cs_path=${this.pipingCsPath}
-piping_sc_path=${this.pipingScPath}
+piping_cs_path=${pipingCsPath.value}
+piping_sc_path=${pipingScPath.value}
 ; Piping Server URL
-piping_server_url=${this.pipingServerUrl}
-${ this.encryptsOpensslAesCtr ? `\
+piping_server_url=${pipingServerUrl.value}
+${ encryptsOpensslAesCtr.value ? `\
 ; Passphrase for end-to-end encryption
-e2ee_passphrase=${this.e2eePassphrase}
+e2ee_passphrase=${e2eePassphrase.value}
 ` : ""}`;
-  }
+});
 
-  get helpForControllerContent(): string {
-    return `\
+const helpForControllerContent = computed<string>(() => {
+  return `\
 # On Web browser
-${this.pipingVncUrl}
+${pipingVncUrl.value}
 `;
-  }
+});
 
-  get pipingVncUrl(): string {
-    const url = new URL("https://piping-vnc.nwtgck.org/vnc.html");
-    const params = new URLSearchParams({
-      "server": this.pipingServerUrl,
-      "cs_path": this.pipingCsPath,
-      "sc_path": this.pipingScPath,
-      ...( this.encryptsOpensslAesCtr ? {
-        // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
-        "e2ee": JSON.stringify({
-          cipher_type: "openssl-aes-256-ctr",
-          pass: this.e2eePassphrase,
-          pbkdf2: { iter: pbkdf2Iter, hash: pbkdf2Hash },
-        }),
-      } : {}),
-    });
-    url.hash = `?${params.toString()}`;
-    return url.href;
-  }
+const pipingVncUrl = computed<string>(() => {
+  const url = new URL("https://piping-vnc.nwtgck.org/vnc.html");
+  const params = new URLSearchParams({
+    "server": pipingServerUrl.value,
+    "cs_path": pipingCsPath.value,
+    "sc_path": pipingScPath.value,
+    ...( encryptsOpensslAesCtr.value ? {
+      // NOTE: openssl-aes-256-ctr, pbkdf2 iter and hash are hard coded
+      "e2ee": JSON.stringify({
+        cipher_type: "openssl-aes-256-ctr",
+        pass: e2eePassphrase.value,
+        pbkdf2: { iter: pbkdf2Iter, hash: pbkdf2Hash },
+      }),
+    } : {}),
+  });
+  url.hash = `?${params.toString()}`;
+  return url.href;
+});
 
-  generateClientHostCommand(clientHostServe: 'nc -l' | 'nc -lp' | 'socat'): string {
-    const serveCommand = (() => {
-      switch (clientHostServe) {
-        case 'nc -l':
-        case 'nc -lp':
-          return `${clientHostServe} ${this.clientHostPort}`;
-        case 'socat':
-          return `socat TCP-LISTEN:${this.clientHostPort},reuseaddr -`;
-      }
-    })();
-    // TODO: hide password properly
-    const encryptIfNeed = (() => {
-      if (this.encryptsOpensslAesCtr) {
-        return [ `stdbuf -i0 -o0 openssl aes-256-ctr -pass "pass:${this.e2eePassphrase}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
-      } else {
-        return [];
-      }
-    })();
-    const decryptIfNeed = (() => {
-      if (this.encryptsOpensslAesCtr) {
-        return [ `stdbuf -i0 -o0 openssl aes-256-ctr -d -pass "pass:${this.e2eePassphrase}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
-      } else {
-        return [];
-      }
-    })();
-    const clientHostCommand = [
-      `curl -sSN ${urlJoin(this.pipingServerUrl, this.pipingScPath)}`,
-      ...decryptIfNeed,
-      serveCommand,
-      ...encryptIfNeed,
-      `curl -sSNT - ${urlJoin(this.pipingServerUrl, this.pipingCsPath)}`
-    ].join(' | ');
-    return clientHostCommand;
-  }
+function generateClientHostCommand(clientHostServe: 'nc -l' | 'nc -lp' | 'socat'): string {
+  const serveCommand = (() => {
+    switch (clientHostServe) {
+      case 'nc -l':
+      case 'nc -lp':
+        return `${clientHostServe} ${clientHostPort.value}`;
+      case 'socat':
+        return `socat TCP-LISTEN:${clientHostPort.value},reuseaddr -`;
+    }
+  })();
+  // TODO: hide password properly
+  const encryptIfNeed = (() => {
+    if (encryptsOpensslAesCtr.value) {
+      return [ `stdbuf -i0 -o0 openssl aes-256-ctr -pass "pass:${e2eePassphrase.value}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
+    } else {
+      return [];
+    }
+  })();
+  const decryptIfNeed = (() => {
+    if (encryptsOpensslAesCtr.value) {
+      return [ `stdbuf -i0 -o0 openssl aes-256-ctr -d -pass "pass:${e2eePassphrase.value}" -bufsize 1 -pbkdf2 -iter ${pbkdf2Iter} -md ${pbkdf2Hash}` ];
+    } else {
+      return [];
+    }
+  })();
+  const clientHostCommand = [
+    `curl -sSN ${urlJoin(pipingServerUrl.value, pipingScPath.value)}`,
+    ...decryptIfNeed,
+    serveCommand,
+    ...encryptIfNeed,
+    `curl -sSNT - ${urlJoin(pipingServerUrl.value, pipingCsPath.value)}`
+  ].join(' | ');
+  return clientHostCommand;
+}
 
-  goTop() {
-    location.hash = "#";
-    // Reload for regenerating paths
-    location.reload();
-  }
+function goTop() {
+  location.hash = "#";
+  // Reload for regenerating paths
+  location.reload();
 }
 </script>
