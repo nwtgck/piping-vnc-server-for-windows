@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^2.0.8",
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.23.5",
