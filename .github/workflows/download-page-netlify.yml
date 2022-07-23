@@ -4,15 +4,12 @@ on:
   pull_request:
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+      - run: cd download-page && npm ci
       - name: Build download-page
-        run: |
-          set -eu
-          cd download-page
-          npm ci
-          npm run build
+        run: cd download-page && npm run build
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.2
         with:
