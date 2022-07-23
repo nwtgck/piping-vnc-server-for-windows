@@ -15,7 +15,7 @@
     "fp-ts": "^2.11.5",
     "io-ts": "^2.2.16",
     "jszip": "^3.7.1",
-    "url-join": "^4.0.1",
+    "url-join": "^5.0.0",
     "vue": "^2.6.14",
     "vue-class-component": "^7.2.6",
     "vue-property-decorator": "^9.1.2",
