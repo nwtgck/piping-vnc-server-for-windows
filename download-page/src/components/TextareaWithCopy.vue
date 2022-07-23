@@ -5,7 +5,7 @@
         <v-tooltip v-model="showsCopied" bottom>
           <template v-slot:activator="{}">
             <v-icon @click="clickCopyIcon">
-              {{ icons.mdiContentCopy }}
+              {{ mdiContentCopy }}
             </v-icon>
           </template>
           <span>Copied</span>
@@ -17,7 +17,7 @@
         <v-tooltip v-model="showsCopied" bottom>
           <template v-slot:activator="{}">
             <v-icon @click="clickCopyIcon">
-              {{ icons.mdiContentCopy }}
+              {{ mdiContentCopy }}
             </v-icon>
           </template>
           <span>Copied</span>
@@ -27,26 +27,25 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+<script setup lang="ts">
+import { defineProps, ref } from "vue";
 import {mdiContentCopy} from "@mdi/js";
 import clipboardCopy from "clipboard-copy";
 
-@Component
-export default class TextareaWithCopy extends Vue {
-  @Prop() private value!: string;
-  @Prop() private label!: string;
-  @Prop({default: false}) private masksValue!: boolean;
-  icons = {
-    mdiContentCopy,
-  };
-  showsCopied: boolean = false;
+const props = withDefaults(defineProps<{
+  value: string,
+  label: string,
+  masksValue: boolean,
+}>(), {
+  masksValue: false,
+});
 
-  async clickCopyIcon() {
-    await clipboardCopy(this.value);
-    this.showsCopied = true;
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    this.showsCopied = false;
-  }
+const showsCopied = ref(false);
+
+async function clickCopyIcon() {
+  await clipboardCopy(props.value);
+  showsCopied.value = true;
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  showsCopied.value = false;
 }
 </script>
