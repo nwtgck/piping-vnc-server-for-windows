@@ -10,7 +10,7 @@
       <div class="d-flex align-center">
         <v-btn href="https://github.com/nwtgck/piping-vnc-server-for-windows" text class="text-none" target="_blank">
           <font-awesome-icon :icon="['fab', 'github']" style="margin-right: 0.3rem" />
-          {{ strings.source_code }}
+          {{ strings?.source_code }}
         </v-btn>
       </div>
       <div class="d-flex align-center">
@@ -34,35 +34,35 @@
             <v-icon left dark>
               {{ mdiDownload }}
             </v-icon>
-            {{ strings.download_zip }}
+            {{ strings?.download_zip }}
           </v-btn>
           <v-btn @click="copyDownloadLink" x-large style="margin-bottom: 0.5rem">
             <v-icon left dark>
               {{ mdiContentCopy }}
             </v-icon>
-            {{ strings.copy_download_link }}
+            {{ strings?.copy_download_link }}
           </v-btn>
           <v-progress-linear :value="downloadAndModifyProgress" :style="{ visibility: downloadAndModifyInProgress ? null : 'hidden' }"/>
           <div class="grey--text text--darken-2 mb-2">
-            <v-icon>{{ mdiHeartOutline }}</v-icon> {{ strings.zip_in_local }}
+            <v-icon>{{ mdiHeartOutline }}</v-icon> {{ strings?.zip_in_local }}
           </div>
-          <div class="grey--text text--darken-2 mb-2" v-html="strings.gpl_notice_html" />
+          <div class="grey--text text--darken-2 mb-2" v-html="strings?.gpl_notice_html" />
         </p>
 
         <div>
           <v-checkbox v-model="encryptsOpensslAesCtr">
             <template v-slot:label>
-              {{ strings.e2e_encryption }}
+              {{ strings?.e2e_encryption }}
               <v-tooltip top>
                 <template v-slot:activator="{ on, attrs }">
                   <v-icon right v-bind="attrs" v-on="on">{{ mdiInformation }}</v-icon>
                 </template>
-                <pre>{{ strings.e2ee_info }}</pre>
+                <pre>{{ strings?.e2ee_info }}</pre>
               </v-tooltip>
             </template>
           </v-checkbox>
           <v-text-field v-if="encryptsOpensslAesCtr"
-                        :label="strings.e2ee_passphrase"
+                        :label="strings?.e2ee_passphrase"
                         v-model="e2eePassphrase"
                         :type="showsE2eePassphrase ? 'text' : 'password'"
                         :append-icon="showsE2eePassphrase ? mdiEye : mdiEyeOff"
@@ -75,7 +75,7 @@
             <v-expansion-panel-header>
               <span>
                 <v-icon>{{ mdiCogOutline }}</v-icon>
-                {{ strings.detail_config }}
+                {{ strings?.detail_config }}
               </span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -99,14 +99,14 @@
 
         <h3 class="grey--text text--darken-2">
           <v-icon>{{ mdiLaptop }}</v-icon>
-          {{ strings.remote_control }}
+          {{ strings?.remote_control }}
         </h3>
-        <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.remote_control_description }}</div>
+        <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings?.remote_control_description }}</div>
 
         <p style="margin-bottom: 2rem">
           <a :href="pipingVncUrl" target="_blank">
             <v-icon>{{ mdiWeb }}</v-icon>
-            {{ strings.control_from_web_browser }}
+            {{ strings?.control_from_web_browser }}
             <v-icon color="blue">
               {{ mdiOpenInNew }}
             </v-icon>
@@ -118,14 +118,14 @@
             <v-expansion-panel-header>
               <span>
                 <v-icon>{{ mdiCodeGreaterThan }}</v-icon>
-                {{ strings.detail_command }}
+                {{ strings?.detail_command }}
               </span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
               <v-text-field :label="'Port'" v-model="clientHostPort" type="number" />
-              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings.detail_command_description(clientHostPort) }}</div>
+              <div class="grey--text text--darken-2" style="margin-bottom: 1rem">{{ strings?.detail_command_description(clientHostPort) }}</div>
               <div v-if="encryptsOpensslAesCtr" class="grey--text text--darken-2" style="margin-bottom: 1rem; font-size: 0.85rem;">
-                {{ strings.commands_contain_password }}
+                {{ strings?.commands_contain_password }}
                 <v-icon v-if="encryptsOpensslAesCtr" @click="showsE2eePassphrase = !showsE2eePassphrase">
                   {{ showsE2eePassphrase ? mdiEye : mdiEyeOff }}
                 </v-icon>
@@ -158,9 +158,8 @@ import {mdiCogOutline, mdiContentCopy, mdiDownload, mdiEye, mdiEyeOff, mdiLaptop
 import {BASE_ZIP_BYTE_LENGTH} from "@/base-zip";
 import clipboardCopy from "clipboard-copy";
 import { z } from "zod";
-import {globalStore} from "@/vue-global";
-import {stringsByLang} from "@/strings";
-import {keys} from "@/local-storage-keys";
+import {language} from "@/language";
+import {strings} from "@/strings/strings";
 import TextareaWithCopy from "@/components/TextareaWithCopy.vue";
 import urlJoin from "url-join";
 
@@ -236,15 +235,6 @@ const availableLanguages = ref<readonly {lang: Language, str: string}[]>([
 ]);
 const clientHostPort = ref(5901);
 
-const language = computed<string>({
-  get: () => globalStore.language,
-  set(l: string) {
-    globalStore.language = l;
-    // Store to Local Storage
-    window.localStorage.setItem(keys.language, l);
-  }
-});
-
 onMounted(() => {
   const e2eeRaw = parseHashAsQuery().get("e2ee");
   if (e2eeRaw !== null) {
@@ -257,9 +247,6 @@ onMounted(() => {
     e2eePassphrase.value = e2eeParamParsed.data.pass;
   }
 });
-
-// for language support
-const strings = computed(() => stringsByLang(globalStore.language));
 
 const downloadAndModifyProgress = computed<number>(() => baseZipProgress.value * 0.7 + zippingProgress.value * 0.3);
 
