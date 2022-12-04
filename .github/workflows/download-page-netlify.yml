@@ -15,7 +15,7 @@ jobs:
       - name: Build download-page
         run: cd download-page && npm run build
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v1.2
+        uses: nwtgck/actions-netlify@develop
         with:
           publish-dir: './download-page/dist'
           # TODO: 
