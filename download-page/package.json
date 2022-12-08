@@ -12,7 +12,7 @@
     "@fortawesome/vue-fontawesome": "^2.0.8",
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.24.0",
-    "jszip": "^3.10.0",
+    "jszip": "^3.10.1",
     "path-browserify": "^1.0.1",
     "url-join": "^5.0.0",
     "vue": "^2.7.10",
