@@ -7,16 +7,16 @@
     "build": "node generate-base-zip-and-ts.js && vue-cli-service build"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/vue-fontawesome": "^2.0.8",
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-brands-svg-icons": "^6.2.1",
+    "@fortawesome/vue-fontawesome": "^3.0.2",
     "clipboard-copy": "^4.0.1",
     "core-js": "^3.24.0",
     "jszip": "^3.10.0",
     "path-browserify": "^1.0.1",
     "url-join": "^5.0.0",
-    "vue": "^2.7.10",
-    "vuetify": "^2.6.10",
+    "vue": "^3.2.45",
+    "vuetify": "^3.0.4",
     "zod": "^3.19.1"
   },
   "devDependencies": {
@@ -28,7 +28,6 @@
     "sass": "^1.54.0",
     "sass-loader": "^13.0.2",
     "typescript": "^4.8.3",
-    "vue-cli-plugin-vuetify": "^2.5.8",
-    "vuetify-loader": "^1.9.2"
+    "webpack-plugin-vuetify": "^2.0.0"
   }
 }
